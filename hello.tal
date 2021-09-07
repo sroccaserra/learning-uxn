@@ -1,0 +1,11 @@
+|18 @Console/write
+
+|0100
+	;hello-world
+	&loop
+		LDAk .Console/write DEO
+		INC2 LDAk ,&loop JCN
+	POP2
+BRK
+
+@hello-world "Hello 20 "World!
