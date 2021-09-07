@@ -1,8 +1,11 @@
 prg=sprite
 cmd=uxnemu
 
-run:
-	uxnasm $(prg).tal $(prg).rom && $(cmd) $(prg).rom
+run: bin
+	uxnasm src/$(prg).tal bin/$(prg).rom && $(cmd) bin/$(prg).rom
+
+bin:
+	mkdir -p bin
 
 clean:
 	rm *.rom
