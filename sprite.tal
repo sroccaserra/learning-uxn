@@ -1,0 +1,17 @@
+|00 @System  [ &vector $2 &pad      $6  &r      $2 &g     $2 &b      $2 ]
+|20 @Screen  [ &vector $2 &width $2 &height $2 &pad   $2 &x $2 &y  $2 &addr $2 &pixel $1 &sprite $1 ]
+
+|0100
+      #3cef .System/r DEO2
+      #3acf .System/g DEO2
+      #3cef .System/b DEO2
+
+      #0008 .Screen/x DEO2
+      #0008 .Screen/y DEO2
+
+      ;square .Screen/addr DEO2
+
+      #01 .Screen/sprite DEO
+BRK
+
+@square ff81 8181 8181 81ff

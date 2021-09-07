@@ -1,2 +1,8 @@
+prg=sprite
+cmd=uxnemu
+
 run:
-	uxnasm hello.tal hello.rom && uxncli hello.rom
+	uxnasm $(prg).tal $(prg).rom && $(cmd) $(prg).rom
+
+clean:
+	rm *.rom
