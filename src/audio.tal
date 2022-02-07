@@ -29,14 +29,16 @@
 BRK
 
 @on-frame
-    .timer LDZ INC .timer STZ
+    .timer LDZ INC .timer STZk POP
+    10MOD #00 EQU BRK?
 
-    .timer LDZ 10MOD ,&end JCN
-
-    #00 .head LDZ ;pattern ADD2 LDA2 POP .Audio0/pitch DEO
+    #00 .head LDZ ;pattern ADD2 LDA
+    DUP ,&play JCN
+    POP ,&skip JMP
+    &play
+    .Audio0/pitch DEO
+    &skip
     .head LDZ INC #10 MOD .head STZ
-
-    &end
 BRK
 
 @set-sound
@@ -49,8 +51,8 @@ RTN
 ~src/common.tal
 
 @pattern ( pitches only for now )
-40 41 42 43 44 45 46 47
-48 49 4a 4b 4c 4d 4e 4f
+40 00 42 43 44 45 46 47
+48 00 4a 4b 4c 4d 4e 4f
 
 @saw
 8083 8689 8c8f 9295 989b 9ea1 a4a7 aaad
