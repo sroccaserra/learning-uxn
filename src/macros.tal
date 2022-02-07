@@ -14,6 +14,11 @@
 %8MOD  { #07 AND } %8MOD2  { #0007 AND2 }
 %10MOD { #0f AND } %10MOD2 { #000f AND2 }
 
+%MOD  { DIVk MUL SUB }
+%MOD2 { DIV2k MUL2 SUB2 }
+%MIN2 { LTH2k JMP SWP2 POP2 }
+%MAX2 { GTH2k JMP SWP2 POP2 }
+
 ( Parse )
 
 %EOL? { \n EQU }

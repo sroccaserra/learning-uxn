@@ -18,15 +18,12 @@
 
 |00
 @timer $1
-@base-pitch $1
-@delta $1
+@head $1
 
 ( init )
 
 |0100 @program
-    #00 .timer STZ
-    E .base-pitch STZ
-    #00 .delta STZ
+    #00 .timer STZk .head STZ
     ;set-sound JSR2
     ;on-frame .Screen/vector DEO2
 BRK
@@ -36,8 +33,8 @@ BRK
 
     .timer LDZ 10MOD ,&end JCN
 
-    .delta LDZ .base-pitch LDZ ADD .Audio0/pitch DEO
-    .delta LDZ INC 8MOD .delta STZ
+    #00 .head LDZ ;pattern ADD2 LDA2 POP .Audio0/pitch DEO
+    .head LDZ INC #10 MOD .head STZ
 
     &end
 BRK
@@ -50,6 +47,10 @@ BRK
 RTN
 
 ~src/common.tal
+
+@pattern ( pitches only for now )
+40 41 42 43 44 45 46 47
+48 49 4a 4b 4c 4d 4e 4f
 
 @saw
 8083 8689 8c8f 9295 989b 9ea1 a4a7 aaad
