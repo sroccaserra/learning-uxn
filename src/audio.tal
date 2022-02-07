@@ -15,16 +15,37 @@
 ( zero page )
 
 |00
+@timer $1
+@base-pitch $1
+@delta $1
 
 ( init )
 
 |0100 @program
+    #00 .timer STZ
+    #40 .base-pitch STZ
+    #00 .delta STZ
+    ;set-sound JSR2
+    ;on-frame .Screen/vector DEO2
+BRK
+
+@on-frame
+    .timer LDZ INC .timer STZ
+
+    .timer LDZ 10MOD ,&end JCN
+
+    .delta LDZ .base-pitch LDZ ADD .Audio0/pitch DEO
+    .delta LDZ INC 8MOD .delta STZ
+
+    &end
+BRK
+
+@set-sound
     #1202 .Audio0/adsr DEO2 ( Enveloppe )
     ;saw  .Audio0/addr DEO2 ( Where the waveform is )
     #0100 .Audio0/length DEO2 ( How long the waveform is )
     #ff   .Audio0/volume DEO ( Volume/Balance )
-    #40   .Audio0/pitch DEO ( The Note, voila! )
-BRK
+RTN
 
 ~src/common.tal
 
