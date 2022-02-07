@@ -1,0 +1,104 @@
+@print-hex ( value* -- )
+    SWP ,&byte JSR
+    &byte ( byte -- )
+        STHk #04 SFT ,&parse JSR #18 DEO
+        STHr #0f AND ,&parse JSR #18 DEO
+    JMP2r
+    &parse ( byte -- char ) DUP #09 GTH ,&above JCN #30 ADD JMP2r
+    &above #57 ADD JMP2r
+RTN
+
+@print-dec ( value* -- )
+    #2710 DIV2k DUP #30 ADD #18 DEO MUL2 SUB2
+    #03e8 DIV2k DUP #30 ADD #18 DEO MUL2 SUB2
+    #0064 DIV2k DUP #30 ADD #18 DEO MUL2 SUB2
+    #000a DIV2k DUP #30 ADD #18 DEO MUL2 SUB2
+    #30 ADD #18 DEO POP
+RTN
+
+@print-str ( string* -- )
+    #0001 SUB2
+    &while
+        INC2 LDAk DUP #18 DEO ,&while JCN
+    POP2
+RTN
+
+@print-str-zp ( string* -- )
+    #01 SUB
+    &while
+        INC LDZk DUP .Console/write DEO ,&while JCN
+    POP
+    \n .Console/write DEO
+RTN
+
+@print-zeropage ( -- )
+    #0a #18 DEO
+    #0000
+    &loop
+        LDZk ;print-hex/byte JSR2
+        DUP #01 AND #00 = ,&no-space JCN
+            #2018 DEO
+            &no-space
+        DUP #0f AND #0f ! ,&no-break JCN
+            #0a18 DEO
+            &no-break
+        INC NEQk ,&loop JCN
+    POP2
+    #0a #18 DEO
+RTN
+
+( decimal string to hex number )
+
+@sdec ( addr* -- hex* )
+    ( res ) LIT2r 0000
+    &while
+        LDAk #30 - #00 SWP
+        STH2r #000a ** ++ STH2
+        INC2 LDAk ,&while JCN
+    POP2
+    ( res ) STH2r
+RTN
+
+( See: https://github.com/jonathanperret/aoc2021/blob/main/library/string.tal )
+
+( -- s* )
+@inline-str
+    STH2r ( s* )
+    DUP2 ( s* s'* )
+    &loop
+        LDAk ( s* s'* b )
+        STH INC2 STHr ( s* s'*+1 b )
+        #00 NEQ ,&loop JCN
+    ( s* s'* )
+JMP2
+
+( 16 bit + Arithmetics )
+
+( would be simpler as a macro: no need to ROTr ROTr )
+@adc16 ( a* b* -- sum* ) ( -- carry^ )
+    OVR2 ADD2 GTH2k STH NIP2 ROTr ROTr
+RTN
+
+@mul16 ( a* b* -- prod** )
+    ,&rhs_h STR2 ,&lhs_h STR2
+    #00 ,&lhs_h LDR #00 ,&rhs_l LDR MUL2
+    #00 ,&lhs_l LDR #00 ,&rhs_h LDR MUL2
+    ;adc16 JSR2
+    #00 ,&lhs_h LDR #00 ,&rhs_h LDR MUL2
+    #00 STHr ADD2
+    #00 ,&lhs_l LDR #00 ,&rhs_l LDR MUL2
+    ,&res_4 STR
+
+    ROT STH ADD2
+    ,&res_3 STR
+    ,&res_2 STR
+    STHr
+    ,&res_1 STR
+
+    LIT &res_1 00
+    LIT &res_2 00
+    LIT &res_3 00
+    LIT &res_4 00
+RTN
+&lhs_h $1 &lhs_l $1
+&rhs_h $1 &rhs_l $1

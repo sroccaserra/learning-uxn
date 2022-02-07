@@ -1,11 +1,15 @@
-prg=sprite
-cmd=uxnemu
+TAL_FILES=$(wildcard src/*.tal)
 
-run: bin
-	uxnasm src/$(prg).tal bin/$(prg).rom && $(cmd) bin/$(prg).rom
+.PHONY: %
+.PRECIOUS: bin/%.rom
+%: bin/%.rom
+	uxnemu $<
+
+bin/%.rom: src/%.tal $(TAL_FILES)
+	uxnasm $< $@
 
 bin:
 	mkdir -p bin
 
 clean:
-	rm *.rom
+	rm bin/*.rom
