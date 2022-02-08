@@ -51,6 +51,16 @@
 %DEBUG { ;print-hex/byte JSR2 LF }
 %DEBUG2 { ;print-hex JSR2 LF }
 
+%AUTO-NONE   { #00 .Screen/auto DEO }
+%AUTO-X      { #01 .Screen/auto DEO }
+%AUTO-Y      { #02 .Screen/auto DEO }
+%AUTO-XY     { #03 .Screen/auto DEO }
+%AUTO-ADDR   { #04 .Screen/auto DEO }
+%AUTO-XADDR  { #05 .Screen/auto DEO }
+%AUTO-YADDR  { #06 .Screen/auto DEO }
+%AUTO-XYADDR { #07 .Screen/auto DEO }
+%RELEASE-MOUSE { #0096 DEO }
+
 ( See: https://github.com/jonathanperret/aoc2021/blob/main/library/string.tal )
 
 %S< { ;inline-str JSR2 } %>S { 00 }

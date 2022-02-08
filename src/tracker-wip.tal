@@ -1,0 +1,119 @@
+~src/macros.tal
+
+%E { #40 }
+
+( devices )
+
+|00 @System     [ &vector $2 &wst $1 &rst $1 &eaddr $2 &ecode $1 &pad $1 &r $2 &g $2 &b $2 &debug $1 &halt $1 ]
+|10 @Console    [ &vector $2 &read $1 &pad $5 &write $1 &error $1 ]
+|20 @Screen     [ &vector $2 &width $2 &height $2 &auto $1 &pad $1 &x $2 &y $2 &addr $2 &pixel $1 &sprite $1 ]
+|30 @Audio0     [ &vector $2 &position $2 &output $1 &pad $3 &adsr $2 &length $2 &addr $2 &volume $1 &pitch $1 ]
+|40 @Audio1     [ &vector $2 &position $2 &output $1 &pad $3 &adsr $2 &length $2 &addr $2 &volume $1 &pitch $1 ]
+|50 @Audio2     [ &vector $2 &position $2 &output $1 &pad $3 &adsr $2 &length $2 &addr $2 &volume $1 &pitch $1 ]
+|60 @Audio3     [ &vector $2 &position $2 &output $1 &pad $3 &adsr $2 &length $2 &addr $2 &volume $1 &pitch $1 ]
+|80 @Controller [ &vector $2 &button $1 &key $1 ]
+|a0 @File       [ &vector $2 &success $2 &stat $2 &delete $1 &append $1 &name $2 &length $2 &read $2 &write $2 ]
+
+( zero page )
+
+|00
+@timer $1
+@head $1
+
+( init )
+
+|0100 @program
+    #00 .timer STZk .head STZ
+    ;set-sound JSR2
+
+    ( theme )
+    #3a5d .System/r DEO2
+    #3acd .System/g DEO2
+    #3aad .System/b DEO2
+
+    ( draw hello world )
+    #0010 .Screen/x DEO2
+    #0010 .Screen/y DEO2
+
+    ;title-txt #02 ;draw-uf1 JSR2
+
+    ;on-frame .Screen/vector DEO2
+BRK
+
+@on-frame
+    .timer LDZ INC DUP .timer STZ
+    10MOD #00 EQU BRK?
+
+    #00 .head LDZ ;pattern ADD2 LDA
+    DUP ,&play JCN
+    POP ,&skip JMP
+    &play
+    .Audio0/pitch DEO
+    &skip
+    .head LDZ INC #10 MOD .head STZ
+BRK
+
+@set-sound
+    #1202 .Audio0/adsr DEO2 ( Enveloppe )
+    ;saw  .Audio0/addr DEO2 ( Where the waveform is )
+    #0100 .Audio0/length DEO2 ( How long the waveform is )
+    #ff   .Audio0/volume DEO ( Volume/Balance )
+RTN
+
+@draw-uf1 ( string* color -- )
+    AUTO-X
+    STH
+    &while
+        LDAk #20 - #00 SWP #30 SFT2 ;font ++ .Screen/addr DEO2
+        STHkr .Screen/sprite DEO
+        INC2 LDAk ,&while JCN
+    POPr
+    POP2
+RTN
+
+@draw-uf1-linebreaks ( string* color -- )
+    .Screen/x DEI2 ,&anchor STR2
+    AUTO-X
+    STH
+    &while
+        LDAk #0a ! ,&no-lb JCN
+            ( rewind ) LIT2 &anchor $2 .Screen/x DEO2
+            ( skip line ) .Screen/y DEI2k #0008 ++ ROT DEO2
+            ,&end JMP
+            &no-lb
+        ( get sprite ) LDAk #20 - #00 SWP #30 SFT2 ;font ++ .Screen/addr DEO2
+        ( draw ) STHkr .Screen/sprite DEO
+        &end
+        INC2 LDAk ,&while JCN
+    POPr
+    POP2
+RTN
+
+~src/common.tal
+
+@title-txt "Tracker 20 "WIP $1
+
+@pattern ( pitches only for now )
+40 00 42 43 44 45 46 47
+48 00 4a 4b 4c 4d 4e 4f
+
+@saw
+8083 8689 8c8f 9295 989b 9ea1 a4a7 aaad
+b0b3 b6b9 bbbe c1c3 c6c9 cbce d0d2 d5d7
+d9db dee0 e2e4 e6e7 e9eb ecee f0f1 f2f4
+f5f6 f7f8 f9fa fbfb fcfd fdfe fefe fefe
+fffe fefe fefe fdfd fcfb fbfa f9f8 f7f6
+f5f4 f2f1 f0ee eceb e9e7 e6e4 e2e0 dedb
+d9d7 d5d2 d0ce cbc9 c6c3 c1be bbb9 b6b3
+b0ad aaa7 a4a1 9e9b 9895 928f 8c89 8683
+807d 7a77 7471 6e6b 6865 625f 5c59 5653
+504d 4a47 4542 3f3d 3a37 3532 302e 2b29
+2725 2220 1e1c 1a19 1715 1412 100f 0e0c
+0b0a 0908 0706 0505 0403 0302 0202 0202
+0102 0202 0202 0303 0405 0506 0708 090a
+0b0c 0e0f 1012 1415 1719 1a1c 1e20 2225
+2729 2b2e 3032 3537 3a3d 3f42 4547 4a4d
+5053 5659 5c5f 6265 686b 6e71 7477 7a7d
+
+@font
+~src/font-bbc-micro.tal
