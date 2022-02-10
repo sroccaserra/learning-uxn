@@ -51,7 +51,7 @@ BRK
 
 @on-frame
     .timer LDZ INC DUP .timer STZ
-    10MOD #00 EQU BRK?
+    10MOD #00 NEQ ,&end JCN
 
     #00 .head LDZ ;pattern ADD2 LDA
     DUP ,&play JCN
@@ -60,7 +60,9 @@ BRK
     .Audio0/pitch DEO
     &skip
     .head LDZ INC #10 MOD .head STZ
+    .row LDZ #08 + .row STZ
 
+    &end
     ;draw JSR2
 BRK
 
@@ -101,11 +103,10 @@ RTN
 
     #0010 .Screen/x DEO2
     .row LDZ
-    DUP TOS #0018 ++ .Screen/y DEO2
+    TOS #0018 ++ .Screen/y DEO2
     LIT '# CHAR-TO-OFFSET ;font ++ .Screen/addr DEO2
     ;tile2 .Screen/addr DEO2
     #02 .Screen/sprite DEO
-    #08 + .row STZ
 RTN
 
 @draw-background
