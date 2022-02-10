@@ -17,6 +17,11 @@
 
 ( constants )
 
+|10 @UP
+|20 @DOWN
+|40 @LEFT
+|80 @RIGHT
+
 |28 @SCREEN_TILE_HEIGHT
 |40 @SCREEN_TILE_WIDTH
 
@@ -26,12 +31,14 @@
 @timer $1
 @head $1
 @row $1
+@cursor [ &x $1 &y $1 ]
 
 ( init )
 
 |0100 @program
     #00 .timer STZk .head STZk .row STZ
     ;set-sound JSR2
+    #09 .cursor/x STZk .cursor/y STZ
 
     ( theme )
     #3a5d .System/r DEO2
@@ -39,6 +46,7 @@
     #3aad .System/b DEO2
 
     ;on-frame .Screen/vector DEO2
+    ;on-controller .Controller/vector DEO2
 BRK
 
 @on-frame
@@ -56,15 +64,25 @@ BRK
     ;draw JSR2
 BRK
 
+@on-controller
+    .Controller/button DEI
+    .UP !~ ,&no-up JCN .cursor/y LDZ #01 - .cursor/y STZ &no-up
+    .DOWN !~ ,&no-down JCN .cursor/y LDZ INC .cursor/y STZ &no-down
+    .LEFT !~ ,&no-left JCN .cursor/x LDZ #01 - .cursor/x STZ &no-left
+    .RIGHT !~ ,&no-right JCN .cursor/x LDZ INC .cursor/x STZ &no-right
+    POP
+BRK
+
 @set-sound
     #1202 .Audio0/adsr DEO2 ( Enveloppe )
     ;saw  .Audio0/addr DEO2 ( Where the waveform is )
     #0100 .Audio0/length DEO2 ( How long the waveform is )
-    #ff   .Audio0/volume DEO ( Volume/Balance )
+    #44   .Audio0/volume DEO ( Volume/Balance )
 RTN
 
 @draw
-    ;draw-grid JSR2
+    ;draw-background JSR2
+    ;draw-track JSR2
 
     ( draw hello world )
     #0010 .Screen/x DEO2
@@ -90,8 +108,7 @@ RTN
     #08 + .row STZ
 RTN
 
-@draw-grid
-    ( background )
+@draw-background
     ;tile1 .Screen/addr DEO2
     .SCREEN_TILE_HEIGHT #00
     &loop-y
@@ -105,6 +122,13 @@ RTN
             POP2
         INC NEQk ,&loop-y JCN
         POP2
+RTN
+
+@draw-track
+    #00 .cursor/x LDZ 8** .Screen/x DEO2
+    #00 .cursor/y LDZ 8** .Screen/y DEO2
+    LIT 'x CHAR-TO-OFFSET ;font ++ .Screen/addr DEO2
+    #01 .Screen/sprite DEO
 RTN
 
 ( https://git.sr.ht/~rabbits/uxn/tree/main/item/projects/examples/gui/monospace.tal )
