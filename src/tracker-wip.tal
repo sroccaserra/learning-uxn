@@ -15,6 +15,11 @@
 |80 @Controller [ &vector $2 &button $1 &key $1 ]
 |a0 @File       [ &vector $2 &success $2 &stat $2 &delete $1 &append $1 &name $2 &length $2 &read $2 &write $2 ]
 
+( constants )
+
+|28 @SCREEN_TILE_HEIGHT
+|40 @SCREEN_TILE_WIDTH
+
 ( zero page )
 
 |00
@@ -88,10 +93,10 @@ RTN
 @draw-grid
     ( background )
     ;tile1 .Screen/addr DEO2
-    #28 #00
+    .SCREEN_TILE_HEIGHT #00
     &loop-y
         DUP TOS 8** .Screen/y DEO2
-        #40 #00
+        .SCREEN_TILE_WIDTH #00
         &loop-x
             DUP TOS 8** .Screen/x DEO2
             ( OVR #10 * OVR + )
