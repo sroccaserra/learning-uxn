@@ -1,6 +1,7 @@
 ~src/macros.tal
 
 %E { #40 }
+%CHAR-TO-OFFSET { #20 - #00 SWP #30 SFT2 }
 
 ( devices )
 
@@ -19,23 +20,18 @@
 |00
 @timer $1
 @head $1
+@row $1
 
 ( init )
 
 |0100 @program
-    #00 .timer STZk .head STZ
+    #00 .timer STZk .head STZk .row STZ
     ;set-sound JSR2
 
     ( theme )
     #3a5d .System/r DEO2
     #3acd .System/g DEO2
     #3aad .System/b DEO2
-
-    ( draw hello world )
-    #0010 .Screen/x DEO2
-    #0010 .Screen/y DEO2
-
-    ;title-txt #02 ;draw-uf1 JSR2
 
     ;on-frame .Screen/vector DEO2
 BRK
@@ -51,6 +47,8 @@ BRK
     .Audio0/pitch DEO
     &skip
     .head LDZ INC #10 MOD .head STZ
+
+    ;draw JSR2
 BRK
 
 @set-sound
@@ -60,11 +58,55 @@ BRK
     #ff   .Audio0/volume DEO ( Volume/Balance )
 RTN
 
+@draw
+    ;draw-grid JSR2
+
+    ( draw hello world )
+    #0010 .Screen/x DEO2
+    #0010 .Screen/y DEO2
+
+    ;title-txt #03 ;draw-uf1 JSR2
+
+    #0010 .Screen/y DEO2
+    LIT '0 CHAR-TO-OFFSET ;font ++ .Screen/addr DEO2
+    #00b0 #0080
+    &loop-x
+        DUP2 .Screen/x DEO2
+        #01 .Screen/sprite DEO
+        #0008 ++ NEQ2k ,&loop-x JCN
+        POP2 POP2
+
+    #0010 .Screen/x DEO2
+    .row LDZ
+    DUP TOS #0018 ++ .Screen/y DEO2
+    LIT '# CHAR-TO-OFFSET ;font ++ .Screen/addr DEO2
+    ;tile2 .Screen/addr DEO2
+    #02 .Screen/sprite DEO
+    #08 + .row STZ
+RTN
+
+@draw-grid
+    ( background )
+    ;tile1 .Screen/addr DEO2
+    #28 #00
+    &loop-y
+        DUP TOS 8** .Screen/y DEO2
+        #40 #00
+        &loop-x
+            DUP TOS 8** .Screen/x DEO2
+            ( OVR #10 * OVR + )
+            #81 .Screen/sprite DEO
+            INC NEQk ,&loop-x JCN
+            POP2
+        INC NEQk ,&loop-y JCN
+        POP2
+RTN
+
 @draw-uf1 ( string* color -- )
     AUTO-X
     STH
     &while
-        LDAk #20 - #00 SWP #30 SFT2 ;font ++ .Screen/addr DEO2
+        LDAk CHAR-TO-OFFSET ;font ++ .Screen/addr DEO2
         STHkr .Screen/sprite DEO
         INC2 LDAk ,&while JCN
     POPr
@@ -81,7 +123,7 @@ RTN
             ( skip line ) .Screen/y DEI2k #0008 ++ ROT DEO2
             ,&end JMP
             &no-lb
-        ( get sprite ) LDAk #20 - #00 SWP #30 SFT2 ;font ++ .Screen/addr DEO2
+        ( get sprite ) LDAk CHAR-TO-OFFSET ;font ++ .Screen/addr DEO2
         ( draw ) STHkr .Screen/sprite DEO
         &end
         INC2 LDAk ,&while JCN
@@ -91,11 +133,34 @@ RTN
 
 ~src/common.tal
 
-@title-txt "Tracker 20 "WIP $1
+@title-txt "Tracker 20 "WIP 00
 
 @pattern ( pitches only for now )
 40 00 42 43 44 45 46 47
 48 00 4a 4b 4c 4d 4e 4f
+
+@tile1
+ff81
+8181
+8181
+81ff
+
+fffe
+fefe
+fefe
+fe00
+
+@tile2
+ff81
+bda5
+a5bd
+81ff
+
+fffe
+c2de
+dede
+fe00
+
 
 @saw
 8083 8689 8c8f 9295 989b 9ea1 a4a7 aaad
