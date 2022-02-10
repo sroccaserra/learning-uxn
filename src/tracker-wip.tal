@@ -107,30 +107,13 @@ RTN
         POP2
 RTN
 
+( https://git.sr.ht/~rabbits/uxn/tree/main/item/projects/examples/gui/monospace.tal )
 @draw-uf1 ( string* color -- )
     AUTO-X
     STH
     &while
         LDAk CHAR-TO-OFFSET ;font ++ .Screen/addr DEO2
         STHkr .Screen/sprite DEO
-        INC2 LDAk ,&while JCN
-    POPr
-    POP2
-RTN
-
-@draw-uf1-linebreaks ( string* color -- )
-    .Screen/x DEI2 ,&anchor STR2
-    AUTO-X
-    STH
-    &while
-        LDAk #0a ! ,&no-lb JCN
-            ( rewind ) LIT2 &anchor $2 .Screen/x DEO2
-            ( skip line ) .Screen/y DEI2k #0008 ++ ROT DEO2
-            ,&end JMP
-            &no-lb
-        ( get sprite ) LDAk CHAR-TO-OFFSET ;font ++ .Screen/addr DEO2
-        ( draw ) STHkr .Screen/sprite DEO
-        &end
         INC2 LDAk ,&while JCN
     POPr
     POP2
