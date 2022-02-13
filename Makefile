@@ -1,5 +1,8 @@
 TAL_FILES=$(wildcard src/*.tal)
 
+.PHONY: default
+default: tracker-wip
+
 .PHONY: %
 .PRECIOUS: bin/%.rom
 %: bin/%.rom
