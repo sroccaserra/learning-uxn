@@ -52,10 +52,17 @@
     ;SCREEN_WIDTH .Screen/width DEO2
     ;SCREEN_HEIGHT .Screen/height DEO2
 
+    ;load-font JSR2
     ;init-sound JSR2
     ;on-frame .Screen/vector DEO2
     ;on-controller .Controller/vector DEO2
 BRK
+
+@load-font
+    ;font-path .File/name DEO2
+    #0900 .File/length DEO2
+    ;font .File/read DEO2
+RTN
 
 @init-sound
     #1202 .Audio0/adsr DEO2 ( Enveloppe )
@@ -101,7 +108,7 @@ RTN
 
     ( draw a bunch of zeros to see the look of it )
     #0020 .Screen/y DEO2
-    LIT '0 CHAR-TO-OFFSET ;font ++ .Screen/addr DEO2
+    LIT '0 ;get-glyph-uf1 JSR2 .Screen/addr DEO2
     #0040 #0010
     &loop-x
         DUP2 .Screen/x DEO2
@@ -137,20 +144,30 @@ RTN
 @draw-cursor
     #00 .cursor/j LDZ 8** .Screen/x DEO2
     #00 .cursor/i LDZ 8** .Screen/y DEO2
-    LIT 'x CHAR-TO-OFFSET ;font ++ .Screen/addr DEO2
+    LIT 'x ;get-glyph-uf1 JSR2 .Screen/addr DEO2
     #01 .Screen/sprite DEO
 RTN
 
-( https://git.sr.ht/~rabbits/uxn/tree/main/item/projects/examples/gui/monospace.tal )
 @draw-uf1 ( string* color -- )
-    AUTO-X
     STH
+    AUTO-NONE
     &while
-        LDAk CHAR-TO-OFFSET ;font ++ .Screen/addr DEO2
-        STHkr .Screen/sprite DEO
+        LDAk STHrk ,draw-glyph-uf1 JSR
         INC2 LDAk ,&while JCN
-    POPr
-    POP2
+    POP2 POPr
+RTN
+
+@draw-glyph-uf1 ( char color -- )
+    .Screen/x DEI2 STH2
+    OVR ,get-glyph-uf1 JSR .Screen/addr DEO2
+    .Screen/sprite DEO
+    TOS ;font ++ LDA ( get width )
+    TOS STH2r ++ .Screen/x DEO2
+RTN
+
+@get-glyph-uf1 ( char -- addr* )
+    TOS #30 SFT2 ;font ++
+    #0100 ++ ( skip width data )
 RTN
 
 ~src/common.tal
@@ -162,30 +179,15 @@ RTN
 48 00 4a 4b 4c 4d 4e 4f
 
 @tile1
-ff81
-8181
-8181
-81ff
-
-fffe
-fefe
-fefe
-fe00
+ff81 8181 8181 81ff
+fffe fefe fefe fe00
 
 @tile2
-ff81
-bda5
-a5bd
-81ff
-
-fffe
-c2de
-dede
-fe00
-
+ff81 bda5 a5bd 81ff
+fffe c2de dede fe00
 
 @saw
 ~assets/saw.tal
 
+@font-path "fonts/atari8.uf1 00
 @font
-~fonts/bbc-micro.tal
