@@ -58,25 +58,25 @@
     ;on-controller .Controller/vector DEO2
 BRK
 
-@load-font
+@load-font ( -- )
     ;font-path .File/name DEO2
     #0900 .File/length DEO2
     ;font .File/read DEO2
 RTN
 
-@init-sound
+@init-sound ( -- )
     #1202 .Audio0/adsr DEO2 ( Enveloppe )
     ;saw  .Audio0/addr DEO2 ( Where the waveform is )
     #0100 .Audio0/length DEO2 ( How long the waveform is )
     #44   .Audio0/volume DEO ( Volume/Balance )
 RTN
 
-@on-frame
+@on-frame ( -- )
     ;update JSR2
     ;draw JSR2
 BRK
 
-@on-controller
+@on-controller ( -- )
     .Controller/button DEI
     .UP !~ ,&no-up JCN .cursor/i LDZ #01 - .cursor/i STZ &no-up
     .DOWN !~ ,&no-down JCN .cursor/i LDZ INC .cursor/i STZ &no-down
@@ -85,7 +85,7 @@ BRK
     POP
 BRK
 
-@update
+@update ( -- )
     .timer LDZ INC DUP .timer STZ
     10MOD #00 EQU RTN?
 
@@ -98,7 +98,7 @@ BRK
     &skip
 RTN
 
-@draw
+@draw ( -- )
     ;draw-background JSR2
 
     ( draw the title )
@@ -116,7 +116,7 @@ RTN
     #02 .Screen/sprite DEO
 RTN
 
-@draw-background
+@draw-background ( -- )
     ;tile1 .Screen/addr DEO2
     .SCREEN_TILE_HEIGHT #00
     &loop-y
@@ -132,7 +132,7 @@ RTN
         POP2
 RTN
 
-@draw-pattern
+@draw-pattern ( -- )
     #10 #00
     &loop
         DUP 8* #20 + TOS .Screen/y DEO2
@@ -159,7 +159,7 @@ RTN
     #30 +
 RTN
 
-@draw-cursor
+@draw-cursor ( -- )
     #00 .cursor/j LDZ 8** .Screen/x DEO2
     #00 .cursor/i LDZ 8** .Screen/y DEO2
     LIT 'x ;get-glyph-uf1 JSR2 .Screen/addr DEO2
