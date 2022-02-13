@@ -193,8 +193,8 @@ RTN
 @title-txt "Tracker 20 "WIP 00
 
 @pattern ( pitches only for now )
-40 00 42 43 44 45 46 47
-48 00 4a 4b 4c 4d 4e 4f
+40 00 00 00 44 00 00 00
+48 00 00 00 4c 00 4e 00
 
 @tile1
 ff81 8181 8181 81ff
