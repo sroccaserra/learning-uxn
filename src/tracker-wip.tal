@@ -41,7 +41,8 @@
 |0100 @program
     #00 .timer STZ
     #ff .play-head STZ
-    #09 DUP .cursor/x STZ .cursor/y STZ
+    #02 .cursor/x STZ
+    #04 .cursor/y STZ
 
     ( theme )
     #3a5d .System/r DEO2
@@ -99,9 +100,9 @@ RTN
     ;title-txt #03 ;draw-uf1 JSR2
 
     ( draw a bunch of zeros to see the look of it )
-    #0010 .Screen/y DEO2
+    #0020 .Screen/y DEO2
     LIT '0 CHAR-TO-OFFSET ;font ++ .Screen/addr DEO2
-    #00b0 #0080
+    #0040 #0010
     &loop-x
         DUP2 .Screen/x DEO2
         #01 .Screen/sprite DEO
@@ -111,8 +112,8 @@ RTN
     ;draw-cursor JSR2
 
     ( draw the play head )
-    #0010 .Screen/x DEO2
-    .play-head LDZ 8* TOS #0018 ++ .Screen/y DEO2
+    #0008 .Screen/x DEO2
+    .play-head LDZ 8* TOS #0020 ++ .Screen/y DEO2
     ;tile2 .Screen/addr DEO2
     #02 .Screen/sprite DEO
 RTN
