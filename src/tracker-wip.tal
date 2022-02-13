@@ -34,15 +34,15 @@
 |00
 @timer $1
 @play-head $1
-@cursor [ &x $1 &y $1 ]
+@cursor [ &i $1 &j $1 ]
 
 ( init )
 
 |0100 @program
     #00 .timer STZ
     #ff .play-head STZ
-    #02 .cursor/x STZ
-    #04 .cursor/y STZ
+    #04 .cursor/i STZ
+    #02 .cursor/j STZ
 
     ( theme )
     #3a5d .System/r DEO2
@@ -71,10 +71,10 @@ BRK
 
 @on-controller
     .Controller/button DEI
-    .UP !~ ,&no-up JCN .cursor/y LDZ #01 - .cursor/y STZ &no-up
-    .DOWN !~ ,&no-down JCN .cursor/y LDZ INC .cursor/y STZ &no-down
-    .LEFT !~ ,&no-left JCN .cursor/x LDZ #01 - .cursor/x STZ &no-left
-    .RIGHT !~ ,&no-right JCN .cursor/x LDZ INC .cursor/x STZ &no-right
+    .UP !~ ,&no-up JCN .cursor/i LDZ #01 - .cursor/i STZ &no-up
+    .DOWN !~ ,&no-down JCN .cursor/i LDZ INC .cursor/i STZ &no-down
+    .LEFT !~ ,&no-left JCN .cursor/j LDZ #01 - .cursor/j STZ &no-left
+    .RIGHT !~ ,&no-right JCN .cursor/j LDZ INC .cursor/j STZ &no-right
     POP
 BRK
 
@@ -135,8 +135,8 @@ RTN
 RTN
 
 @draw-cursor
-    #00 .cursor/x LDZ 8** .Screen/x DEO2
-    #00 .cursor/y LDZ 8** .Screen/y DEO2
+    #00 .cursor/j LDZ 8** .Screen/x DEO2
+    #00 .cursor/i LDZ 8** .Screen/y DEO2
     LIT 'x CHAR-TO-OFFSET ;font ++ .Screen/addr DEO2
     #01 .Screen/sprite DEO
 RTN
