@@ -22,8 +22,12 @@
 |40 @LEFT
 |80 @RIGHT
 
-|28 @SCREEN_TILE_HEIGHT
-|40 @SCREEN_TILE_WIDTH
+|0100 @SCREEN_WIDTH
+|00e0 @SCREEN_HEIGHT
+
+|1c @SCREEN_TILE_HEIGHT
+|20 @SCREEN_TILE_WIDTH
+
 
 ( zero page )
 
@@ -43,6 +47,9 @@
     #3a5d .System/r DEO2
     #3acd .System/g DEO2
     #3aad .System/b DEO2
+
+    ;SCREEN_WIDTH .Screen/width DEO2
+    ;SCREEN_HEIGHT .Screen/height DEO2
 
     ;init-sound JSR2
     ;on-frame .Screen/vector DEO2
