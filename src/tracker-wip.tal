@@ -42,7 +42,7 @@
     #00 .timer STZ
     #ff .play-head STZ
     #04 .cursor/i STZ
-    #02 .cursor/j STZ
+    #05 .cursor/j STZ
 
     ( theme )
     #3a5d .System/r DEO2
@@ -106,16 +106,7 @@ RTN
     #0010 .Screen/y DEO2
     ;title-txt #03 ;draw-uf1 JSR2
 
-    ( draw a bunch of zeros to see the look of it )
-    #0020 .Screen/y DEO2
-    LIT '0 ;get-glyph-uf1 JSR2 .Screen/addr DEO2
-    #0040 #0010
-    &loop-x
-        DUP2 .Screen/x DEO2
-        #01 .Screen/sprite DEO
-        #0008 ++ NEQ2k ,&loop-x JCN
-        POP2 POP2
-
+    ;draw-pattern JSR2
     ;draw-cursor JSR2
 
     ( draw the play head )
@@ -139,6 +130,33 @@ RTN
             POP2
         INC NEQk ,&loop-y JCN
         POP2
+RTN
+
+@draw-pattern
+    #10 #00
+    &loop
+        DUP 8* #20 + TOS .Screen/y DEO2
+        DUP TOS ;pattern ++ LDA
+
+        #0010 .Screen/x DEO2
+        DUP 10/
+        ;to-hex-char JSR2
+        #01 ;draw-glyph-uf1 JSR2
+
+        #0018 .Screen/x DEO2
+        #0f AND
+        ;to-hex-char JSR2
+        #01 ;draw-glyph-uf1 JSR2
+
+        INC NEQk ,&loop JCN
+        POP POP
+RTN
+
+@to-hex-char ( n^ -- char^ )
+    DUP #0a LTH ,&dec JCN
+    #27 +
+    &dec
+    #30 +
 RTN
 
 @draw-cursor
