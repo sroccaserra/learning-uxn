@@ -46,7 +46,7 @@
     #00 .timer STZ
     #ff .play-head STZ
     #04 .cursor/i STZ
-    #05 .cursor/j STZ
+    #06 .cursor/j STZ
 
     ( theme )
     #3a5d .System/r DEO2
@@ -152,7 +152,7 @@ RTN
 
         #0f AND
         ;to-hex-char JSR2
-        STHr ;draw-glyph-uf1 JSR2
+        STHrk ;draw-glyph-uf1 JSR2
 
         ,&continue JMP
 
@@ -162,9 +162,10 @@ RTN
         LIT '- DUP
         #0010 .Screen/x DEO2
         STHrk ;draw-glyph-uf1 JSR2
-        STHr ;draw-glyph-uf1 JSR2
+        STHrk ;draw-glyph-uf1 JSR2
 
         &continue
+        LIT '- STHr ;draw-glyph-uf1 JSR2
 
         INC NEQk ,&loop JCN
         POP POP
