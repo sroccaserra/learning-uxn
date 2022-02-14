@@ -36,14 +36,14 @@
 ( zero page )
 
 |00
-@timer $1
+@timer [ &beat $1 &speed $1 ]
 @play-head $1
 @cursor [ &i $1 &j $1 ]
 
 ( init )
 
 |0100 @program
-    #00 .timer STZ
+    #08 .timer/speed STZ
     #ff .play-head STZ
     #04 .cursor/i STZ
     #06 .cursor/j STZ
@@ -138,8 +138,7 @@ RTN
 RTN
 
 @update ( -- )
-    .timer LDZ INC DUP .timer STZ
-    10MOD #00 EQU RTN?
+    .timer LDZ2 ! ,&end JCN
 
     .play-head LDZ INC #10 MOD DUP .play-head STZ ( play-head^ )
     TOS ;pattern ADD2 LDA
@@ -148,6 +147,9 @@ RTN
     &play
     .Audio0/pitch DEO
     &skip
+    #00 .timer/beat STZ
+    &end
+    .timer/beat LDZk INC SWP STZ
 RTN
 
 @draw ( -- )
