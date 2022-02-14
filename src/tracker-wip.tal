@@ -141,8 +141,8 @@ RTN
     &loop
         DUP 8* #20 + TOS .Screen/y DEO2
         DUP TOS ;pattern ++ LDA
-        DUP #00 IF-EQU .OFF_COLOR ELSE-NEQ .ON_COLOR
-        STH
+        DUP #00 EQU ,&no-trigger JCN
+        .ON_COLOR STH
 
         #0010 .Screen/x DEO2
         DUP 10/
@@ -153,6 +153,19 @@ RTN
         #0f AND
         ;to-hex-char JSR2
         STHr ;draw-glyph-uf1 JSR2
+
+        ,&continue JMP
+
+        &no-trigger
+        POP
+        .OFF_COLOR STH
+        LIT '- DUP
+        #0010 .Screen/x DEO2
+        STHrk ;draw-glyph-uf1 JSR2
+        #0018 .Screen/x DEO2
+        STHr ;draw-glyph-uf1 JSR2
+
+        &continue
 
         INC NEQk ,&loop JCN
         POP POP
