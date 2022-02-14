@@ -1,4 +1,5 @@
 TAL_FILES=$(wildcard src/*.tal)
+ASSETS=$(wildcard assets/*.tal)
 
 .PHONY: default
 default: tracker-wip
@@ -8,7 +9,7 @@ default: tracker-wip
 %: bin/%.rom
 	uxnemu -s 2 $<
 
-bin/%.rom: src/%.tal $(TAL_FILES)
+bin/%.rom: src/%.tal $(TAL_FILES) $(ASSETS)
 	uxnasm $< $@
 
 bin:

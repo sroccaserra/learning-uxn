@@ -5,6 +5,7 @@
 - <https://wiki.xxiivv.com/site/uxntal_macros.html>
 - <https://wiki.xxiivv.com/site/chr_format.html>
 - <https://wiki.xxiivv.com/site/ufx_format.html>
+- <https://wiki.xxiivv.com/site/midi.html>
 - <https://100r.co/site/nasu.html>
 - <https://git.sr.ht/~rabbits/orca-toy/tree/main/item/src/utils.tal>
 - <https://compudanzas.net/uxn_tutorial.html>
