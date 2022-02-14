@@ -2,6 +2,8 @@
 
 %E { #40 }
 %CHAR-TO-OFFSET { #20 - #00 SWP #30 SFT2 }
+%IF-EQU { NEQ #04 JCN }
+%ELSE-NEQ { #02 JMP }
 
 ( devices )
 
@@ -28,6 +30,8 @@
 |1c @SCREEN_TILE_HEIGHT
 |20 @SCREEN_TILE_WIDTH
 
+|03 @ON_COLOR
+|01 @OFF_COLOR
 
 ( zero page )
 
@@ -137,16 +141,18 @@ RTN
     &loop
         DUP 8* #20 + TOS .Screen/y DEO2
         DUP TOS ;pattern ++ LDA
+        DUP #00 IF-EQU .OFF_COLOR ELSE-NEQ .ON_COLOR
+        STH
 
         #0010 .Screen/x DEO2
         DUP 10/
         ;to-hex-char JSR2
-        #01 ;draw-glyph-uf1 JSR2
+        STHrk ;draw-glyph-uf1 JSR2
 
         #0018 .Screen/x DEO2
         #0f AND
         ;to-hex-char JSR2
-        #01 ;draw-glyph-uf1 JSR2
+        STHr ;draw-glyph-uf1 JSR2
 
         INC NEQk ,&loop JCN
         POP POP
