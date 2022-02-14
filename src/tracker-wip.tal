@@ -86,11 +86,20 @@ RTN
 BRK
 
 @on-controller ( -- )
+    .Controller/button DEI #01 AND ;on-control JCN2
+
     .Controller/button DEI
     .UP !~ ,&no-up JCN ;cursor-up JSR2 &no-up
     .DOWN !~ ,&no-down JCN ;cursor-down JSR2 &no-down
     .LEFT !~ ,&no-left JCN ;cursor-left JSR2 &no-left
     .RIGHT !~ ,&no-right JCN ;cursor-right JSR2 &no-right
+    POP
+BRK
+
+@on-control ( -- )
+    .Controller/key DEI
+    [ LIT 'x ] !~ ,&no-ctrl-x JCN ;dec-at-cursor JSR2 &no-ctrl-x
+    [ LIT 'a ] !~ ,&no-ctrl-a JCN ;inc-at-cursor JSR2 &no-ctrl-a
     POP
 BRK
 
@@ -108,6 +117,24 @@ RTN
 
 @cursor-right ( -- )
     .cursor/j LDZ INC .cursor/j STZ
+RTN
+
+@dec-at-cursor ( -- )
+    .cursor/i LDZ #03 < ,&end JCN
+    .cursor/i LDZ #13 > ,&end JCN
+
+    ;pattern #00 .cursor/i LDZ #04 - ++
+    STH2k LDA #01 - STH2r STA
+    &end
+RTN
+
+@inc-at-cursor ( -- )
+    .cursor/i LDZ #03 < ,&end JCN
+    .cursor/i LDZ #13 > ,&end JCN
+
+    ;pattern #00 .cursor/i LDZ #04 - ++
+    STH2k LDA INC STH2r STA
+    &end
 RTN
 
 @update ( -- )
