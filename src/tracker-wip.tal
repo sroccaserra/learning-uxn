@@ -283,6 +283,9 @@ fffe c2de dede fe00
 @saw-path "assets/saw.pcm 00
 @saw $00ff
 
+@pulse-path "assets/pulse.pcm 00
+@pulse $00ff
+
 @sin-path "assets/sin.pcm 00
 @sin $00ff
 
