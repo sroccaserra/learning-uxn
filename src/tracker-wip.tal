@@ -89,10 +89,17 @@ BRK
     .Controller/button DEI #01 AND ;on-control JCN2
 
     .Controller/button DEI
-    .UP !~ ,&no-up JCN ;cursor-up JSR2 &no-up
-    .DOWN !~ ,&no-down JCN ;cursor-down JSR2 &no-down
-    .LEFT !~ ,&no-left JCN ;cursor-left JSR2 &no-left
-    .RIGHT !~ ,&no-right JCN ;cursor-right JSR2 &no-right
+    .UP !~ ,&no-up-b JCN ;cursor-up JSR2 &no-up-b
+    .DOWN !~ ,&no-down-b JCN ;cursor-down JSR2 &no-down-b
+    .LEFT !~ ,&no-left-b JCN ;cursor-left JSR2 &no-left-b
+    .RIGHT !~ ,&no-right-b JCN ;cursor-right JSR2 &no-right-b
+    POP
+
+    .Controller/key DEI
+    [ LIT 'h ] !~ ,&no-left-k JCN ;cursor-left JSR2 &no-left-k
+    [ LIT 'j ] !~ ,&no-down-k JCN ;cursor-down JSR2 &no-down-k
+    [ LIT 'k ] !~ ,&no-up-k JCN ;cursor-up JSR2 &no-up-k
+    [ LIT 'l ] !~ ,&no-right-k JCN ;cursor-right JSR2 &no-right-k
     POP
 BRK
 
