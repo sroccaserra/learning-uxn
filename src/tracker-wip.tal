@@ -138,6 +138,7 @@ RTN
 
 @draw-pattern ( -- )
     #10 #00
+    AUTO-X
     &loop
         DUP 8* #20 + TOS .Screen/y DEO2
         DUP TOS ;pattern ++ LDA
@@ -149,7 +150,6 @@ RTN
         ;to-hex-char JSR2
         STHrk ;draw-glyph-uf1 JSR2
 
-        #0018 .Screen/x DEO2
         #0f AND
         ;to-hex-char JSR2
         STHr ;draw-glyph-uf1 JSR2
@@ -162,7 +162,6 @@ RTN
         LIT '- DUP
         #0010 .Screen/x DEO2
         STHrk ;draw-glyph-uf1 JSR2
-        #0018 .Screen/x DEO2
         STHr ;draw-glyph-uf1 JSR2
 
         &continue

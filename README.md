@@ -8,6 +8,7 @@
 - <https://100r.co/site/nasu.html>
 - <https://git.sr.ht/~rabbits/orca-toy/tree/main/item/src/utils.tal>
 - <https://compudanzas.net/uxn_tutorial.html>
+- <https://forum.merveilles.town/thread/21/uxn-real-time-audio-5/>
 - <https://llllllll.co/t/uxn-virtual-computer/46103/8>
 - <https://llllllll.co/t/uxn-virtual-computer/46103/101>
 - <https://llllllll.co/t/uxn-virtual-computer/46103/314>
