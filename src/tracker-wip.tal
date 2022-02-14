@@ -87,12 +87,28 @@ BRK
 
 @on-controller ( -- )
     .Controller/button DEI
-    .UP !~ ,&no-up JCN .cursor/i LDZ #01 - .cursor/i STZ &no-up
-    .DOWN !~ ,&no-down JCN .cursor/i LDZ INC .cursor/i STZ &no-down
-    .LEFT !~ ,&no-left JCN .cursor/j LDZ #01 - .cursor/j STZ &no-left
-    .RIGHT !~ ,&no-right JCN .cursor/j LDZ INC .cursor/j STZ &no-right
+    .UP !~ ,&no-up JCN ;cursor-up JSR2 &no-up
+    .DOWN !~ ,&no-down JCN ;cursor-down JSR2 &no-down
+    .LEFT !~ ,&no-left JCN ;cursor-left JSR2 &no-left
+    .RIGHT !~ ,&no-right JCN ;cursor-right JSR2 &no-right
     POP
 BRK
+
+@cursor-up ( -- )
+    .cursor/i LDZ #01 - .cursor/i STZ
+RTN
+
+@cursor-down ( -- )
+    .cursor/i LDZ INC .cursor/i STZ
+RTN
+
+@cursor-left ( -- )
+    .cursor/j LDZ #01 - .cursor/j STZ
+RTN
+
+@cursor-right ( -- )
+    .cursor/j LDZ INC .cursor/j STZ
+RTN
 
 @update ( -- )
     .timer LDZ INC DUP .timer STZ
