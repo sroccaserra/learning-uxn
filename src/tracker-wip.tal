@@ -283,5 +283,5 @@ fffe c2de dede fe00
 @chat-path "assets/chat.pcm 00
 @chat $2000
 
-@font-path "fonts/atari8.uf1 00
+@font-path "fonts/bbcmicro8.uf1 00
 @font $0900
