@@ -129,8 +129,34 @@ RTN
     .cursor/i LDZ #03 < ,&end JCN
     .cursor/i LDZ #13 > ,&end JCN
 
-    ;pattern #00 .cursor/i LDZ #04 - ++
-    STH2k LDA #01 - STH2r STA
+    #00 .cursor/i LDZ #04 - ( pattern-row-index )
+    ;pattern ++ STH2k LDA ( pattern-row )
+    ;is-on-octave-col JSR2 ,&dec-octave JCN
+
+    DUP 10/ ( pattern-row note-index )
+    ;dec-note JSR2
+    10* SWP #0f AND +
+    ,&end JMP
+
+    &dec-octave
+    DUP #0f AND ( pattern-row octave )
+    ;dec-octave JSR2
+    SWP #f0 AND +
+    &end
+    STH2r STA
+RTN
+
+@dec-note ( note-index^ -- note-index^ )
+    #01 -
+    #0c <~ ,&end JCN
+        POP #0b
+    &end
+RTN
+
+@dec-octave ( octave^ -- octave^ )
+    #01 -
+    #08 <~ ,&end JCN
+        POP #07
     &end
 RTN
 
@@ -138,9 +164,38 @@ RTN
     .cursor/i LDZ #03 < ,&end JCN
     .cursor/i LDZ #13 > ,&end JCN
 
-    ;pattern #00 .cursor/i LDZ #04 - ++
-    STH2k LDA INC STH2r STA
+    #00 .cursor/i LDZ #04 - ( pattern-row-index )
+    ;pattern ++ STH2k LDA ( pattern-row )
+    ;is-on-octave-col JSR2 ,&inc-octave JCN
+    DUP 10/
+    ;inc-note JSR2
+    10* SWP #0f AND +
+    ,&end JMP
+    &inc-octave
+    DUP #0f AND ( pattern-row octave )
+    ;inc-octave JSR2
+    SWP #f0 AND +
     &end
+    STH2r STA
+RTN
+
+@inc-note ( note-index^ -- note-index^ )
+    INC
+    #0c <~ ,&end JCN
+        POP #00
+    &end
+RTN
+
+@inc-octave ( octave^ -- octave^ )
+    INC
+    #08 <~ ,&end JCN
+        POP #00
+    &end
+RTN
+
+
+@is-on-octave-col ( -- bool^ )
+    .cursor/j LDZ #03 GTH
 RTN
 
 @update ( -- )
@@ -151,7 +206,7 @@ RTN
     DUP ,&play JCN
     POP ,&skip JMP
     &play
-    .Audio0/pitch DEO
+    ;midi-note JSR2 .Audio0/pitch DEO
     &skip
     #00 .timer/beat STZ
     &end
@@ -199,30 +254,31 @@ RTN
         DUP 8* #20 + TOS .Screen/y DEO2
         DUP TOS ;pattern ++ LDA
         DUP #00 EQU ,&no-trigger JCN
+
         ON_COLOR STH
-
         #0010 .Screen/x DEO2
-        DUP 10/
-        ;to-hex-char JSR2
-        STHrk ;draw-glyph-uf1 JSR2
 
-        #0f AND
-        ;to-hex-char JSR2
-        STHrk ;draw-glyph-uf1 JSR2
+        DUP 10/ 2*
+        TOS ;note-labels ++ DUP2
+        LDA STHrk ;draw-glyph-uf1 JSR2
+        INC2
+        LDA STHrk ;draw-glyph-uf1 JSR2
+
+        #0f AND ;to-hex-char JSR2
+        STHr ;draw-glyph-uf1 JSR2
 
         ,&continue JMP
 
         &no-trigger
         POP
         OFF_COLOR STH
-        LIT '- DUP
         #0010 .Screen/x DEO2
-        STHrk ;draw-glyph-uf1 JSR2
-        STHrk ;draw-glyph-uf1 JSR2
+        LIT '-
+        DUP STHrk ;draw-glyph-uf1 JSR2
+        DUP STHrk ;draw-glyph-uf1 JSR2
+        STHr ;draw-glyph-uf1 JSR2
 
         &continue
-        LIT '- STHr ;draw-glyph-uf1 JSR2
-
         INC NEQk ,&loop JCN
         POP POP
 RTN
@@ -263,13 +319,35 @@ RTN
     #0100 ++ ( skip width data )
 RTN
 
+@midi-note ( pattern-row -- hex-midi-note )
+    DUP
+    #0f AND INC #0c MUL ( octave offset )
+    SWP 10/ ( note offset )
+    ADD
+RTN
+
 ~src/common.tal
 
 @title-txt "Tracker 20 "WIP 00
 
-@pattern ( pitches only for now )
-bc 00 00 00 bc 00 00 00
-bc 00 00 00 bc 00 bc 00
+@note-labels
+"C-
+"C#
+"D-
+"D#
+"E-
+"F-
+"F#
+"G-
+"G#
+"A-
+"A#
+"B-
+
+( first nibble is pitch 0 <= p <= b, second is octave )
+@pattern
+04 00 00 00 04 00 00 00
+04 00 00 00 04 00 04 00
 
 @tile1
 ff81 8181 8181 81ff
