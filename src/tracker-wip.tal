@@ -56,8 +56,10 @@
     SCREEN_HEIGHT .Screen/height DEO2
 
     ;font #0900 ;font-path ;load-file JSR2
-    ;saw #00ff ;saw-path ;load-file JSR2
-    ;sin #00ff ;sin-path ;load-file JSR2
+
+    ;saw #0100 ;saw-path ;load-file JSR2
+    ;pulse #0100 ;pulse-path ;load-file JSR2
+    ;sin #0100 ;sin-path ;load-file JSR2
     ;kick #2000 ;kick-path ;load-file JSR2
     ;chat #2000 ;chat-path ;load-file JSR2
 
@@ -74,8 +76,8 @@ RTN
 
 @init-sound ( -- )
     #0202 .Audio0/adsr DEO2 ( Enveloppe )
-    ;chat  .Audio0/addr DEO2 ( Where the waveform is )
-    #2000 .Audio0/length DEO2 ( How long the waveform is )
+    ;pulse  .Audio0/addr DEO2 ( Where the waveform is )
+    #0100 .Audio0/length DEO2 ( How long the waveform is )
     #22   .Audio0/volume DEO ( Volume/Balance )
 RTN
 
@@ -358,13 +360,13 @@ ff81 bda5 a5bd 81ff
 fffe c2de dede fe00
 
 @saw-path "assets/saw.pcm 00
-@saw $00ff
+@saw $0100
 
 @pulse-path "assets/pulse.pcm 00
-@pulse $00ff
+@pulse $0100
 
 @sin-path "assets/sin.pcm 00
-@sin $00ff
+@sin $0100
 
 @kick-path "assets/kck2.pcm 00
 @kick $2000
