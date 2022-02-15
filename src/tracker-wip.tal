@@ -1,9 +1,24 @@
+( macros )
+
 ~src/macros.tal
 
-%E { #40 }
 %CHAR-TO-OFFSET { #20 - #00 SWP #30 SFT2 }
-%IF-EQU { NEQ #04 JCN }
-%ELSE-NEQ { #02 JMP }
+
+( constants )
+
+%UP { #10 }
+%DOWN { #20 }
+%LEFT { #40 }
+%RIGHT { #80 }
+
+%SCREEN_WIDTH { #0100 }
+%SCREEN_HEIGHT { #00e0 }
+
+%SCREEN_TILE_HEIGHT { #1c }
+%SCREEN_TILE_WIDTH { #20 }
+
+%ON_COLOR { #03 }
+%OFF_COLOR { #01 }
 
 ( devices )
 
@@ -16,22 +31,6 @@
 |60 @Audio3     [ &vector $2 &position $2 &output $1 &pad $3 &adsr $2 &length $2 &addr $2 &volume $1 &pitch $1 ]
 |80 @Controller [ &vector $2 &button $1 &key $1 ]
 |a0 @File       [ &vector $2 &success $2 &stat $2 &delete $1 &append $1 &name $2 &length $2 &read $2 &write $2 ]
-
-( constants )
-
-|10 @UP
-|20 @DOWN
-|40 @LEFT
-|80 @RIGHT
-
-|0100 @SCREEN_WIDTH
-|00e0 @SCREEN_HEIGHT
-
-|1c @SCREEN_TILE_HEIGHT
-|20 @SCREEN_TILE_WIDTH
-
-|03 @ON_COLOR
-|01 @OFF_COLOR
 
 ( zero page )
 
@@ -53,8 +52,8 @@
     #3acd .System/g DEO2
     #3aad .System/b DEO2
 
-    ;SCREEN_WIDTH .Screen/width DEO2
-    ;SCREEN_HEIGHT .Screen/height DEO2
+    SCREEN_WIDTH .Screen/width DEO2
+    SCREEN_HEIGHT .Screen/height DEO2
 
     ;font #0900 ;font-path ;load-file JSR2
     ;saw #00ff ;saw-path ;load-file JSR2
@@ -89,10 +88,10 @@ BRK
     .Controller/button DEI #01 AND ;on-control JCN2
 
     .Controller/button DEI
-    .UP !~ ,&no-up-b JCN ;cursor-up JSR2 &no-up-b
-    .DOWN !~ ,&no-down-b JCN ;cursor-down JSR2 &no-down-b
-    .LEFT !~ ,&no-left-b JCN ;cursor-left JSR2 &no-left-b
-    .RIGHT !~ ,&no-right-b JCN ;cursor-right JSR2 &no-right-b
+    UP !~ ,&no-up-b JCN ;cursor-up JSR2 &no-up-b
+    DOWN !~ ,&no-down-b JCN ;cursor-down JSR2 &no-down-b
+    LEFT !~ ,&no-left-b JCN ;cursor-left JSR2 &no-left-b
+    RIGHT !~ ,&no-right-b JCN ;cursor-right JSR2 &no-right-b
     POP
 
     .Controller/key DEI
@@ -179,10 +178,10 @@ RTN
 
 @draw-background ( -- )
     ;tile1 .Screen/addr DEO2
-    .SCREEN_TILE_HEIGHT #00
+    SCREEN_TILE_HEIGHT #00
     &loop-y
         DUP TOS 8** .Screen/y DEO2
-        .SCREEN_TILE_WIDTH #00
+        SCREEN_TILE_WIDTH #00
         &loop-x
             DUP TOS 8** .Screen/x DEO2
             ( OVR #10 * OVR + )
@@ -200,7 +199,7 @@ RTN
         DUP 8* #20 + TOS .Screen/y DEO2
         DUP TOS ;pattern ++ LDA
         DUP #00 EQU ,&no-trigger JCN
-        .ON_COLOR STH
+        ON_COLOR STH
 
         #0010 .Screen/x DEO2
         DUP 10/
@@ -215,7 +214,7 @@ RTN
 
         &no-trigger
         POP
-        .OFF_COLOR STH
+        OFF_COLOR STH
         LIT '- DUP
         #0010 .Screen/x DEO2
         STHrk ;draw-glyph-uf1 JSR2
