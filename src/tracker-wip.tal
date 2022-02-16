@@ -45,7 +45,7 @@
     #08 .timer/speed STZ
     #ff .play-head STZ
     #04 .cursor/i STZ
-    #06 .cursor/j STZ
+    #04 .cursor/j STZ
 
     ( theme )
     #3a5d .System/r DEO2
@@ -295,8 +295,8 @@ RTN
 @draw-cursor ( -- )
     #00 .cursor/j LDZ 8** .Screen/x DEO2
     #00 .cursor/i LDZ 8** .Screen/y DEO2
-    LIT 'x ;get-glyph-uf1 JSR2 .Screen/addr DEO2
-    #01 .Screen/sprite DEO
+    ;cursor-tile .Screen/addr DEO2
+    #0a .Screen/sprite DEO
 RTN
 
 @draw-uf1 ( string* color -- )
@@ -352,12 +352,16 @@ RTN
 04 00 00 00 04 00 04 00
 
 @tile1
-ff81 8181 8181 81ff
-fffe fefe fefe fe00
+0000 0018 1800 0000
+0000 0000 0000 0000
 
 @tile2
 ff81 bda5 a5bd 81ff
 fffe c2de dede fe00
+
+@cursor-tile
+e781 8100 0081 81e7
+0000 0000 0000 0000
 
 @saw-path "assets/saw.pcm 00
 @saw $0100
