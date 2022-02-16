@@ -17,8 +17,8 @@
 %SCREEN_TILE_HEIGHT { #1c }
 %SCREEN_TILE_WIDTH { #20 }
 
-%ON_COLOR { #03 }
-%OFF_COLOR { #01 }
+%COLOR_ON { #03 }
+%COLOR_OFF { #01 }
 
 ( devices )
 
@@ -257,7 +257,7 @@ RTN
         DUP TOS ;pattern ++ LDA
         DUP #00 EQU ,&no-trigger JCN
 
-        ON_COLOR STH
+        COLOR_ON STH
         #0010 .Screen/x DEO2
 
         DUP 10/ 2*
@@ -273,7 +273,7 @@ RTN
 
         &no-trigger
         POP
-        OFF_COLOR STH
+        COLOR_OFF STH
         #0010 .Screen/x DEO2
         LIT '-
         DUP STHrk ;draw-glyph-uf1 JSR2
