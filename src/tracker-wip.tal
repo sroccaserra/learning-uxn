@@ -133,9 +133,12 @@ RTN
     #00 .cursor/i LDZ #04 - 2** ( pattern-row-index )
     ;pattern ++ STH2k LDA2 ( pattern-row )
     ;is-on-octave-col JSR2 ,&dec-octave JCN
+    ;is-on-instrument-col JSR2 ,&dec-instrument JCN
         ;dec-note JSR2 ,&end JMP
         &dec-octave
-        ;dec-octave JSR2
+        ;dec-octave JSR2 ,&end JMP
+        &dec-instrument
+        ;dec-instrument JSR2
     &end
     STH2r STA2
 RTN
@@ -162,6 +165,15 @@ RTN
     SWP ( restore row order )
 RTN
 
+@dec-instrument ( pattern-row* -- pattern-row* )
+    DUP 10/
+    #01 -
+    #08 <~ ,&end JCN
+        POP #07
+    &end
+    10* SWP #0f AND +
+RTN
+
 @inc-at-cursor ( -- )
     .cursor/i LDZ #03 < ,&end JCN
     .cursor/i LDZ #13 > ,&end JCN
@@ -169,9 +181,12 @@ RTN
     #00 .cursor/i LDZ #04 - 2** ( pattern-row-index* )
     ;pattern ++ STH2k LDA2 ( pattern-row* )
     ;is-on-octave-col JSR2 ,&inc-octave JCN
+    ;is-on-instrument-col JSR2 ,&inc-instrument JCN
         ;inc-note JSR2 ,&end JMP
         &inc-octave
-        ;inc-octave JSR2
+        ;inc-octave JSR2 ,&end JMP
+        &inc-instrument
+        ;inc-instrument JSR2
     &end
     STH2r STA2
 RTN
@@ -198,9 +213,22 @@ RTN
     SWP ( restore row order )
 RTN
 
+@inc-instrument ( pattern-row* -- pattern-row* )
+    DUP 10/
+    INC
+    #08 <~ ,&end JCN
+        POP #00
+    &end
+    10* SWP #0f AND +
+RTN
+
 
 @is-on-octave-col ( -- bool^ )
-    .cursor/j LDZ #03 GTH
+    .cursor/j LDZ #04 EQU
+RTN
+
+@is-on-instrument-col ( -- bool^ )
+    .cursor/j LDZ #05 EQU
 RTN
 
 @update ( -- )
@@ -286,7 +314,7 @@ RTN
     COLOR_NOTE ;draw-glyph-uf1 JSR2
 
     ( draw instrument number )
-    ;to-hex-char JSR2
+    10/ ;to-hex-char JSR2
     COLOR_INSTRUMENT ;draw-glyph-uf1 JSR2
 RTN
 
