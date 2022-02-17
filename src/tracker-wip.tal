@@ -83,8 +83,6 @@ RTN
 
 @init-sound ( -- )
     #0202 .Audio0/adsr DEO2 ( Enveloppe )
-    ;pulse  .Audio0/addr DEO2 ( Where the waveform is )
-    #0100 .Audio0/length DEO2 ( How long the waveform is )
     #22   .Audio0/volume DEO ( Volume/Balance )
 RTN
 
