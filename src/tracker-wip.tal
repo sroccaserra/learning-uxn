@@ -20,6 +20,9 @@
 %COLOR_INSTRUMENT { #03 }
 %COLOR_OFF { #01 }
 
+%NB_INSTRUMENTS { #08 }
+%INSTRUMENT_SIZE { #07 }
+
 ( devices )
 
 |00 @System     [ &vector $2 &wst $1 &rst $1 &eaddr $2 &ecode $1 &pad $1 &r $2 &g $2 &b $2 &debug $1 &halt $1 ]
@@ -57,14 +60,15 @@
 
     ;font #0900 ;font-path ;load-file JSR2
 
-    ;kick #2000 ;kick-path ;load-file JSR2
-    ;snare #1000 ;snare-path ;load-file JSR2
-    ;chat #2000 ;chat-path ;load-file JSR2
-    ;ohat #1000 ;ohat-path ;load-file JSR2
-    ;pulse #0100 ;pulse-path ;load-file JSR2
-    ;saw #0100 ;saw-path ;load-file JSR2
-    ;sin #0100 ;sin-path ;load-file JSR2
-    ;piano #0100 ;piano-path ;load-file JSR2
+    NB_INSTRUMENTS INC #00
+    &loop
+        DUP INSTRUMENT_SIZE * TOS ;instruments ++
+        ( load sample addr ) LDA2k SWP2 INC2 INC2
+        ( load sample size ) LDA2k SWP2 INC2 INC2 INC2
+        ( load sample path adress ) LDA2
+        ;load-file JSR2
+        INC NEQk ,&loop JCN
+    POP POP
 
     ;init-sound JSR2
     ;on-frame .Screen/vector DEO2
@@ -251,7 +255,7 @@ RTN
 RTN
 
 @play ( pattern-row* -- )
-    10/ #05 MUL TOS ;instruments ++
+    10/ INSTRUMENT_SIZE * TOS ;instruments ++
     LDA2k .Audio0/addr DEO2
     INC2 INC2
     LDA2k .Audio0/length DEO2
@@ -411,14 +415,14 @@ RTN
 
 ( data address, size, should loop )
 @instruments
-:kick 2000 00
-:snare 1000 00
-:chat 2000 00
-:ohat 1000 00
-:pulse 0100 01
-:saw 0100 01
-:sin 0100 01
-:piano 0100 01
+:kick 2000 00 :kick-path
+:snare 1000 00 :snare-path
+:chat 2000 00 :chat-path
+:ohat 1000 00 :ohat-path
+:pulse 0100 01 :pulse-path
+:saw 0100 01 :saw-path
+:sin 0100 01 :sin-path
+:piano 0100 01 :piano-path
 
 @tile1
 0000 0018 1800 0000
