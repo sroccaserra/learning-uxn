@@ -15,7 +15,8 @@
 %SCREEN_TILE_HEIGHT { #1c }
 %SCREEN_TILE_WIDTH { #20 }
 
-%COLOR_ON { #03 }
+%COLOR_NOTE { #03 }
+%COLOR_INSTRUMENT { #02 }
 %COLOR_OFF { #01 }
 
 ( devices )
@@ -261,26 +262,29 @@ RTN
 RTN
 
 @draw-row ( pattern-row* -- )
-    COLOR_ON STH
+    COLOR_NOTE STH
     #0010 .Screen/x DEO2
 
     SWP ( access to note & octave first )
+    ( draw note label )
     DUP 10/ 2*
     TOS ;note-labels ++ DUP2
     LDA STHrk ;draw-glyph-uf1 JSR2
     INC2
     LDA STHrk ;draw-glyph-uf1 JSR2
-
+    ( draw octave number )
     #0f AND ;to-hex-char JSR2
     STHr ;draw-glyph-uf1 JSR2
-
-    POP ( discard instrument byte for now )
+    ( draw instrument number )
+    ;to-hex-char JSR2
+    COLOR_INSTRUMENT ;draw-glyph-uf1 JSR2
 RTN
 
 @draw-empty-row ( -- )
     COLOR_OFF STH
     #0010 .Screen/x DEO2
     LIT '-
+    DUP STHrk ;draw-glyph-uf1 JSR2
     DUP STHrk ;draw-glyph-uf1 JSR2
     DUP STHrk ;draw-glyph-uf1 JSR2
     STHr ;draw-glyph-uf1 JSR2
