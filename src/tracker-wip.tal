@@ -248,35 +248,42 @@ RTN
     AUTO-X
     &loop
         DUP 8* #20 + TOS .Screen/y DEO2
-        DUP TOS 2** ;pattern ++ LDA
-        DUP #00 EQU ,&no-trigger JCN
-
-        COLOR_ON STH
-        #0010 .Screen/x DEO2
-
-        DUP 10/ 2*
-        TOS ;note-labels ++ DUP2
-        LDA STHrk ;draw-glyph-uf1 JSR2
-        INC2
-        LDA STHrk ;draw-glyph-uf1 JSR2
-
-        #0f AND ;to-hex-char JSR2
-        STHr ;draw-glyph-uf1 JSR2
-
-        ,&continue JMP
-
-        &no-trigger
-        POP
-        COLOR_OFF STH
-        #0010 .Screen/x DEO2
-        LIT '-
-        DUP STHrk ;draw-glyph-uf1 JSR2
-        DUP STHrk ;draw-glyph-uf1 JSR2
-        STHr ;draw-glyph-uf1 JSR2
-
+        DUP TOS 2** ;pattern ++ LDA2
+        OVR #00 EQU ,&no-trigger JCN
+            ;draw-row JSR2
+            ,&continue JMP
+            &no-trigger
+            ;draw-empty-row JSR2
+            POP2
         &continue
         INC NEQk ,&loop JCN
         POP POP
+RTN
+
+@draw-row ( pattern-row* -- )
+    COLOR_ON STH
+    #0010 .Screen/x DEO2
+
+    SWP ( access to note & octave first )
+    DUP 10/ 2*
+    TOS ;note-labels ++ DUP2
+    LDA STHrk ;draw-glyph-uf1 JSR2
+    INC2
+    LDA STHrk ;draw-glyph-uf1 JSR2
+
+    #0f AND ;to-hex-char JSR2
+    STHr ;draw-glyph-uf1 JSR2
+
+    POP ( discard instrument byte for now )
+RTN
+
+@draw-empty-row ( -- )
+    COLOR_OFF STH
+    #0010 .Screen/x DEO2
+    LIT '-
+    DUP STHrk ;draw-glyph-uf1 JSR2
+    DUP STHrk ;draw-glyph-uf1 JSR2
+    STHr ;draw-glyph-uf1 JSR2
 RTN
 
 @to-hex-char ( n^ -- char^ )
