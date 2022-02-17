@@ -57,11 +57,14 @@
 
     ;font #0900 ;font-path ;load-file JSR2
 
-    ;saw #0100 ;saw-path ;load-file JSR2
-    ;pulse #0100 ;pulse-path ;load-file JSR2
-    ;sin #0100 ;sin-path ;load-file JSR2
     ;kick #2000 ;kick-path ;load-file JSR2
+    ;snare #1000 ;snare-path ;load-file JSR2
     ;chat #2000 ;chat-path ;load-file JSR2
+    ;ohat #1000 ;ohat-path ;load-file JSR2
+    ;pulse #0100 ;pulse-path ;load-file JSR2
+    ;saw #0100 ;saw-path ;load-file JSR2
+    ;sin #0100 ;sin-path ;load-file JSR2
+    ;piano #0100 ;piano-path ;load-file JSR2
 
     ;init-sound JSR2
     ;on-frame .Screen/vector DEO2
@@ -236,10 +239,14 @@ RTN
     .timer LDZ2 ! ,&end JCN
 
     .play-head LDZ INC #10 MOD DUP .play-head STZ ( play-head^ )
-    TOS 2** ;pattern ADD2 LDA
-    DUP ,&play JCN
-    POP ,&skip JMP
-    &play
+    TOS 2** ;pattern ADD2 LDA2
+    OVR ,&play JCN
+    POP2 ,&skip JMP
+    &play ( pattern-row )
+    10/ 4* TOS
+    ;instruments ++
+    DUP2 LDA2 .Audio0/addr DEO2
+    INC2 INC2 LDA2 .Audio0/length DEO2
     ;midi-note JSR2 .Audio0/pitch DEO
     &skip
     #00 .timer/beat STZ
@@ -389,10 +396,20 @@ RTN
 "B-
 
 ( First nibble is pitch 0 <= p <= b, second is octave )
-( Second byte is added in preparation of instrument index )
+( Second byte first nibble is the instrument index )
 @pattern
-0400 0000 0000 0000 0400 0000 0000 0000
-0400 0000 0000 0000 0400 0000 0400 0000
+0400 0000 0420 0000 0410 0000 0420 0000
+0400 0000 0420 0000 0410 0000 0400 0000
+
+@instruments
+:kick 2000
+:snare 1000
+:chat 2000
+:ohat 1000
+:pulse 0100
+:saw 0100
+:sin 0100
+:piano 0100
 
 @tile1
 0000 0018 1800 0000
@@ -406,20 +423,29 @@ fffe c2de dede fe00
 e781 8100 0081 81e7
 0000 0000 0000 0000
 
-@saw-path "assets/saw.pcm 00
-@saw $0100
+@kick-path "assets/kck2.pcm 00
+@kick $2000
+
+@snare-path "assets/snr1.pcm 00
+@snare $1000
+
+@chat-path "assets/chat.pcm 00
+@chat $2000
+
+@ohat-path "assets/ohat.pcm 00
+@ohat $1000
 
 @pulse-path "assets/pulse.pcm 00
 @pulse $0100
 
+@saw-path "assets/saw.pcm 00
+@saw $0100
+
 @sin-path "assets/sin.pcm 00
 @sin $0100
 
-@kick-path "assets/kck2.pcm 00
-@kick $2000
-
-@chat-path "assets/chat.pcm 00
-@chat $2000
+@piano-path "assets/piano.pcm 00
+@piano $0100
 
 @font-path "fonts/bbcmicro8.uf1 00
 @font $0900
