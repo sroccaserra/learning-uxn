@@ -245,9 +245,11 @@ RTN
     &play ( pattern-row )
     10/ #05 MUL TOS
     ;instruments ++
-    DUP2 LDA2 .Audio0/addr DEO2
-    INC2 INC2 LDA2 .Audio0/length DEO2
-    ;midi-note JSR2 .Audio0/pitch DEO
+    DUP2 DEBUG2
+    LDA2k .Audio0/addr DEO2
+    INC2 INC2 LDA2k .Audio0/length DEO2
+    INC2 INC2 LDA #00 EQU #70 SFT SWP
+    ;midi-note JSR2 + .Audio0/pitch DEO
     &skip
     #00 .timer/beat STZ
     &end
