@@ -391,6 +391,18 @@ RTN
 
 @title-txt "Tracker 20 "WIP 00
 
+@tile1
+0000 0018 1800 0000
+0000 0000 0000 0000
+
+@tile2
+ff81 bda5 a5bd 81ff
+fffe c2de dede fe00
+
+@cursor-tile
+e781 8100 0081 81e7
+0000 0000 0000 0000
+
 @note-labels
 "C-
 "C#
@@ -421,18 +433,6 @@ RTN
 :saw 0100 01 :saw-path
 :sin 0100 01 :sin-path
 :piano 0100 01 :piano-path
-
-@tile1
-0000 0018 1800 0000
-0000 0000 0000 0000
-
-@tile2
-ff81 bda5 a5bd 81ff
-fffe c2de dede fe00
-
-@cursor-tile
-e781 8100 0081 81e7
-0000 0000 0000 0000
 
 @kick-path "assets/kck2.pcm 00
 @kick $2000
