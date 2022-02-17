@@ -131,63 +131,71 @@ RTN
     .cursor/i LDZ #13 > ,&end JCN
 
     #00 .cursor/i LDZ #04 - 2** ( pattern-row-index )
-    ;pattern ++ STH2k LDA ( pattern-row )
+    ;pattern ++ STH2k LDA2 ( pattern-row )
     ;is-on-octave-col JSR2 ,&dec-octave JCN
         ;dec-note JSR2 ,&end JMP
         &dec-octave
         ;dec-octave JSR2
     &end
-    STH2r STA
+    STH2r STA2
 RTN
 
 @dec-note ( pattern-row* -- pattern-row* )
-    DUP 10/ ( pattern-row note-index )
+    SWP ( bring note & octave part to the top )
+    DUP 10/
     #01 -
     #0c <~ ,&end JCN
         POP #0b
     &end
     10* SWP #0f AND +
+    SWP ( restore row order )
 RTN
 
 @dec-octave ( pattern-row* -- pattern-row* )
-    DUP #0f AND ( pattern-row octave )
+    SWP ( bring note & octave part to the top )
+    DUP #0f AND
     #01 -
     #08 <~ ,&end JCN
         POP #07
     &end
     SWP #f0 AND +
+    SWP ( restore row order )
 RTN
 
 @inc-at-cursor ( -- )
     .cursor/i LDZ #03 < ,&end JCN
     .cursor/i LDZ #13 > ,&end JCN
 
-    #00 .cursor/i LDZ #04 - 2** ( pattern-row-index )
-    ;pattern ++ STH2k LDA ( pattern-row )
+    #00 .cursor/i LDZ #04 - 2** ( pattern-row-index* )
+    ;pattern ++ STH2k LDA2 ( pattern-row* )
     ;is-on-octave-col JSR2 ,&inc-octave JCN
         ;inc-note JSR2 ,&end JMP
         &inc-octave
         ;inc-octave JSR2
     &end
-    STH2r STA
+    STH2r STA2
 RTN
 
 @inc-note ( pattern-row* -- pattern-row* )
+    SWP ( bring note & octave part to the top )
     DUP 10/
     INC
     #0c <~ ,&end JCN
         POP #00
     &end
     10* SWP #0f AND +
+    SWP ( restore row order )
 RTN
 
 @inc-octave ( pattern-row* -- pattern-row* )
-    DUP #0f AND ( pattern-row octave )
+    SWP ( bring note & octave part to the top )
+    DUP #0f AND
     INC
     #08 <~ ,&end JCN
         POP #00
     &end
     SWP #f0 AND +
+    SWP ( restore row order )
 RTN
 
 
