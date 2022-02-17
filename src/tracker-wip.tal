@@ -16,7 +16,8 @@
 %SCREEN_TILE_WIDTH { #20 }
 
 %COLOR_NOTE { #03 }
-%COLOR_INSTRUMENT { #02 }
+%COLOR_OCTAVE { #02 }
+%COLOR_INSTRUMENT { #03 }
 %COLOR_OFF { #01 }
 
 ( devices )
@@ -311,7 +312,7 @@ RTN
 
     ( draw octave number )
     #0f AND ;to-hex-char JSR2
-    COLOR_NOTE ;draw-glyph-uf1 JSR2
+    COLOR_OCTAVE ;draw-glyph-uf1 JSR2
 
     ( draw instrument number )
     10/ ;to-hex-char JSR2
