@@ -262,32 +262,32 @@ RTN
 RTN
 
 @draw-row ( pattern-row* -- )
-    COLOR_NOTE STH
     #0010 .Screen/x DEO2
 
     SWP ( access to note & octave first )
+
     ( draw note label )
     DUP 10/ 2*
     TOS ;note-labels ++ DUP2
-    LDA STHrk ;draw-glyph-uf1 JSR2
+    LDA COLOR_NOTE ;draw-glyph-uf1 JSR2
     INC2
-    LDA STHrk ;draw-glyph-uf1 JSR2
+    LDA COLOR_NOTE ;draw-glyph-uf1 JSR2
+
     ( draw octave number )
     #0f AND ;to-hex-char JSR2
-    STHr ;draw-glyph-uf1 JSR2
+    COLOR_NOTE ;draw-glyph-uf1 JSR2
+
     ( draw instrument number )
     ;to-hex-char JSR2
     COLOR_INSTRUMENT ;draw-glyph-uf1 JSR2
 RTN
 
 @draw-empty-row ( -- )
-    COLOR_OFF STH
     #0010 .Screen/x DEO2
-    LIT '-
-    DUP STHrk ;draw-glyph-uf1 JSR2
-    DUP STHrk ;draw-glyph-uf1 JSR2
-    DUP STHrk ;draw-glyph-uf1 JSR2
-    STHr ;draw-glyph-uf1 JSR2
+    LIT '- COLOR_OFF ;draw-glyph-uf1 JSR2
+    LIT '- COLOR_OFF ;draw-glyph-uf1 JSR2
+    LIT '- COLOR_OFF ;draw-glyph-uf1 JSR2
+    LIT '- COLOR_OFF ;draw-glyph-uf1 JSR2
 RTN
 
 @to-hex-char ( n^ -- char^ )
