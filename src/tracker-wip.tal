@@ -2,8 +2,6 @@
 
 ~src/macros.tal
 
-%CHAR-TO-OFFSET { #20 - #00 SWP #30 SFT2 }
-
 ( constants )
 
 %UP { #10 }
