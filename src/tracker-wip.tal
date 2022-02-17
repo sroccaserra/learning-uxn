@@ -242,18 +242,24 @@ RTN
     TOS 2** ;pattern ADD2 LDA2
     OVR ,&play JCN
     POP2 ,&skip JMP
-    &play ( pattern-row )
-    10/ #05 MUL TOS
-    ;instruments ++
-    DUP2 DEBUG2
-    LDA2k .Audio0/addr DEO2
-    INC2 INC2 LDA2k .Audio0/length DEO2
-    INC2 INC2 LDA #00 EQU #70 SFT SWP
-    ;midi-note JSR2 + .Audio0/pitch DEO
-    &skip
-    #00 .timer/beat STZ
+        &play
+        ;play JSR2
+        &skip
+        #00 .timer/beat STZ
     &end
     .timer/beat LDZk INC SWP STZ
+RTN
+
+@play ( pattern-row* -- )
+    10/ #05 MUL TOS ;instruments ++
+    LDA2k .Audio0/addr DEO2
+    INC2 INC2
+    LDA2k .Audio0/length DEO2
+    INC2 INC2
+    ( last byte of instrument is the loop config, invert it and shift it left for uxn )
+    LDA #00 EQU #70 SFT
+    SWP ( loop-bit^ note-and-octave^ )
+    ;midi-note JSR2 + .Audio0/pitch DEO
 RTN
 
 @draw ( -- )
@@ -350,7 +356,7 @@ RTN
     #0a .Screen/sprite DEO
 RTN
 
-@draw-uf1 ( string* color -- )
+@draw-uf1 ( string* color^ -- )
     STH
     AUTO-NONE
     &while
@@ -359,7 +365,7 @@ RTN
     POP2 POPr
 RTN
 
-@draw-glyph-uf1 ( char color -- )
+@draw-glyph-uf1 ( char^ color^ -- )
     .Screen/x DEI2 STH2
     OVR ,get-glyph-uf1 JSR .Screen/addr DEO2
     .Screen/sprite DEO
@@ -367,12 +373,12 @@ RTN
     TOS STH2r ++ .Screen/x DEO2
 RTN
 
-@get-glyph-uf1 ( char -- addr* )
+@get-glyph-uf1 ( char^ -- addr* )
     TOS #30 SFT2 ;font ++
     #0100 ++ ( skip width data )
 RTN
 
-@midi-note ( pattern-row -- hex-midi-note )
+@midi-note ( note-and-octave^ -- hex-midi-note^ )
     DUP
     #0f AND INC #0c MUL ( octave offset )
     SWP 10/ ( note offset )
