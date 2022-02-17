@@ -132,32 +132,29 @@ RTN
     #00 .cursor/i LDZ #04 - ( pattern-row-index )
     ;pattern ++ STH2k LDA ( pattern-row )
     ;is-on-octave-col JSR2 ,&dec-octave JCN
-
-    DUP 10/ ( pattern-row note-index )
-    ;dec-note JSR2
-    10* SWP #0f AND +
-    ,&end JMP
-
-    &dec-octave
-    DUP #0f AND ( pattern-row octave )
-    ;dec-octave JSR2
-    SWP #f0 AND +
+        ;dec-note JSR2 ,&end JMP
+        &dec-octave
+        ;dec-octave JSR2
     &end
     STH2r STA
 RTN
 
-@dec-note ( note-index^ -- note-index^ )
+@dec-note ( pattern-row* -- pattern-row* )
+    DUP 10/ ( pattern-row note-index )
     #01 -
     #0c <~ ,&end JCN
         POP #0b
     &end
+    10* SWP #0f AND +
 RTN
 
-@dec-octave ( octave^ -- octave^ )
+@dec-octave ( pattern-row* -- pattern-row* )
+    DUP #0f AND ( pattern-row octave )
     #01 -
     #08 <~ ,&end JCN
         POP #07
     &end
+    SWP #f0 AND +
 RTN
 
 @inc-at-cursor ( -- )
@@ -167,30 +164,29 @@ RTN
     #00 .cursor/i LDZ #04 - ( pattern-row-index )
     ;pattern ++ STH2k LDA ( pattern-row )
     ;is-on-octave-col JSR2 ,&inc-octave JCN
-    DUP 10/
-    ;inc-note JSR2
-    10* SWP #0f AND +
-    ,&end JMP
-    &inc-octave
-    DUP #0f AND ( pattern-row octave )
-    ;inc-octave JSR2
-    SWP #f0 AND +
+        ;inc-note JSR2 ,&end JMP
+        &inc-octave
+        ;inc-octave JSR2
     &end
     STH2r STA
 RTN
 
-@inc-note ( note-index^ -- note-index^ )
+@inc-note ( pattern-row* -- pattern-row* )
+    DUP 10/
     INC
     #0c <~ ,&end JCN
         POP #00
     &end
+    10* SWP #0f AND +
 RTN
 
-@inc-octave ( octave^ -- octave^ )
+@inc-octave ( pattern-row* -- pattern-row* )
+    DUP #0f AND ( pattern-row octave )
     INC
     #08 <~ ,&end JCN
         POP #00
     &end
+    SWP #f0 AND +
 RTN
 
 
