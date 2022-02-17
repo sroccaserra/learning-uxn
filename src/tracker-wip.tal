@@ -129,7 +129,7 @@ RTN
     .cursor/i LDZ #03 < ,&end JCN
     .cursor/i LDZ #13 > ,&end JCN
 
-    #00 .cursor/i LDZ #04 - ( pattern-row-index )
+    #00 .cursor/i LDZ #04 - 2** ( pattern-row-index )
     ;pattern ++ STH2k LDA ( pattern-row )
     ;is-on-octave-col JSR2 ,&dec-octave JCN
         ;dec-note JSR2 ,&end JMP
@@ -161,7 +161,7 @@ RTN
     .cursor/i LDZ #03 < ,&end JCN
     .cursor/i LDZ #13 > ,&end JCN
 
-    #00 .cursor/i LDZ #04 - ( pattern-row-index )
+    #00 .cursor/i LDZ #04 - 2** ( pattern-row-index )
     ;pattern ++ STH2k LDA ( pattern-row )
     ;is-on-octave-col JSR2 ,&inc-octave JCN
         ;inc-note JSR2 ,&end JMP
@@ -198,7 +198,7 @@ RTN
     .timer LDZ2 ! ,&end JCN
 
     .play-head LDZ INC #10 MOD DUP .play-head STZ ( play-head^ )
-    TOS ;pattern ADD2 LDA
+    TOS 2** ;pattern ADD2 LDA
     DUP ,&play JCN
     POP ,&skip JMP
     &play
@@ -248,7 +248,7 @@ RTN
     AUTO-X
     &loop
         DUP 8* #20 + TOS .Screen/y DEO2
-        DUP TOS ;pattern ++ LDA
+        DUP TOS 2** ;pattern ++ LDA
         DUP #00 EQU ,&no-trigger JCN
 
         COLOR_ON STH
@@ -340,10 +340,11 @@ RTN
 "A#
 "B-
 
-( first nibble is pitch 0 <= p <= b, second is octave )
+( First nibble is pitch 0 <= p <= b, second is octave )
+( Second byte is added in preparation of instrument index )
 @pattern
-04 00 00 00 04 00 00 00
-04 00 00 00 04 00 04 00
+0400 0000 0000 0000 0400 0000 0000 0000
+0400 0000 0000 0000 0400 0000 0400 0000
 
 @tile1
 0000 0018 1800 0000
