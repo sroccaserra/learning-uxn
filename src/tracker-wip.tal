@@ -243,7 +243,7 @@ RTN
     OVR ,&play JCN
     POP2 ,&skip JMP
     &play ( pattern-row )
-    10/ 4* TOS
+    10/ #05 MUL TOS
     ;instruments ++
     DUP2 LDA2 .Audio0/addr DEO2
     INC2 INC2 LDA2 .Audio0/length DEO2
@@ -401,15 +401,16 @@ RTN
 0400 0000 0420 0000 0410 0000 0420 0000
 0400 0000 0420 0000 0410 0000 0400 0000
 
+( data address, size, should loop )
 @instruments
-:kick 2000
-:snare 1000
-:chat 2000
-:ohat 1000
-:pulse 0100
-:saw 0100
-:sin 0100
-:piano 0100
+:kick 2000 00
+:snare 1000 00
+:chat 2000 00
+:ohat 1000 00
+:pulse 0100 01
+:saw 0100 01
+:sin 0100 01
+:piano 0100 01
 
 @tile1
 0000 0018 1800 0000
