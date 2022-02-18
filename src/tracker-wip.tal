@@ -23,6 +23,8 @@
 %NB_INSTRUMENTS { #08 }
 %INSTRUMENT_SIZE { #07 }
 
+%PATTERN_ROW_SIZE { #02 }
+
 ( devices )
 
 |00 @System     [ &vector $2 &wst $1 &rst $1 &eaddr $2 &ecode $1 &pad $1 &r $2 &g $2 &b $2 &debug $1 &halt $1 ]
@@ -136,8 +138,9 @@ RTN
     .cursor/i LDZ #03 < ,&end JCN
     .cursor/i LDZ #13 > ,&end JCN
 
-    #00 .cursor/i LDZ #04 - 2** ( pattern-row-index )
-    ;pattern ++ STH2k LDA2 ( pattern-row )
+    .cursor/i LDZ #04 - ( pattern-row-index^ )
+    PATTERN_ROW_SIZE * ( pattern-row-offset^ )
+    TOS ;pattern ++ STH2k LDA2 ( pattern-row* )
     ;is-on-octave-col JSR2 ,&dec-octave JCN
     ;is-on-instrument-col JSR2 ,&dec-instrument JCN
         ;dec-note JSR2 ,&end JMP
@@ -184,8 +187,9 @@ RTN
     .cursor/i LDZ #03 < ,&end JCN
     .cursor/i LDZ #13 > ,&end JCN
 
-    #00 .cursor/i LDZ #04 - 2** ( pattern-row-index* )
-    ;pattern ++ STH2k LDA2 ( pattern-row* )
+    .cursor/i LDZ #04 - ( pattern-row-index^ )
+    PATTERN_ROW_SIZE * ( pattern-row-offset^ )
+    TOS ;pattern ++ STH2k LDA2 ( pattern-row* )
     ;is-on-octave-col JSR2 ,&inc-octave JCN
     ;is-on-instrument-col JSR2 ,&inc-instrument JCN
         ;inc-note JSR2 ,&end JMP
@@ -241,7 +245,8 @@ RTN
     .timer LDZ2 ! ,&end JCN
 
     .play-head LDZ INC #10 MOD DUP .play-head STZ ( play-head^ )
-    TOS 2** ;pattern ADD2 LDA2
+    PATTERN_ROW_SIZE *
+    TOS ;pattern ++ LDA2
     OVR ,&play JCN
     POP2 ,&skip JMP
         &play
@@ -303,7 +308,8 @@ RTN
     AUTO-X
     &loop
         DUP 8* #20 + TOS .Screen/y DEO2
-        DUP TOS 2** ;pattern ++ LDA2
+        DUP PATTERN_ROW_SIZE *
+        TOS ;pattern ++ LDA2
         OVR #00 EQU ,&no-trigger JCN
             ;draw-row JSR2
             ,&continue JMP
