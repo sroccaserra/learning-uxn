@@ -23,7 +23,7 @@
 %NB_INSTRUMENTS { #08 }
 %INSTRUMENT_SIZE { #07 }
 
-%PATTERN_ROW_SIZE { #02 }
+%PATTERN_ROW_SIZE { #03 }
 
 ( devices )
 
@@ -139,8 +139,7 @@ RTN
     .cursor/i LDZ #13 > ,&end JCN
 
     .cursor/i LDZ #04 - ( pattern-row-index^ )
-    PATTERN_ROW_SIZE * ( pattern-row-offset^ )
-    TOS ;pattern ++ STH2k LDA2 ( pattern-row* )
+    PATTERN_ROW_SIZE * TOS ( pattern-row-offset* )
     ;is-on-octave-col JSR2 ,&dec-octave JCN
     ;is-on-instrument-col JSR2 ,&dec-instrument JCN
         ;dec-note JSR2 ,&end JMP
@@ -149,38 +148,39 @@ RTN
         &dec-instrument
         ;dec-instrument JSR2
     &end
-    STH2r STA2
 RTN
 
-@dec-note ( pattern-row* -- pattern-row* )
-    SWP ( bring note & octave part to the top )
+@dec-note ( pattern-row-offset* -- )
+    ;pattern/note-octave ++ STH2k LDA
     DUP 10/
     #01 -
     #0c <~ ,&end JCN
         POP #0b
     &end
     10* SWP #0f AND +
-    SWP ( restore row order )
+    STH2r STA
 RTN
 
-@dec-octave ( pattern-row* -- pattern-row* )
-    SWP ( bring note & octave part to the top )
+@dec-octave ( pattern-row-offset* -- )
+    ;pattern/note-octave ++ STH2k LDA
     DUP #0f AND
     #01 -
     #08 <~ ,&end JCN
         POP #07
     &end
     SWP #f0 AND +
-    SWP ( restore row order )
+    STH2r STA
 RTN
 
-@dec-instrument ( pattern-row* -- pattern-row* )
+@dec-instrument ( pattern-row-offset* -- )
+    ;pattern/inst ++ STH2k LDA
     DUP 10/
     #01 -
     #08 <~ ,&end JCN
         POP #07
     &end
     10* SWP #0f AND +
+    STH2r STA
 RTN
 
 @inc-at-cursor ( -- )
@@ -188,8 +188,7 @@ RTN
     .cursor/i LDZ #13 > ,&end JCN
 
     .cursor/i LDZ #04 - ( pattern-row-index^ )
-    PATTERN_ROW_SIZE * ( pattern-row-offset^ )
-    TOS ;pattern ++ STH2k LDA2 ( pattern-row* )
+    PATTERN_ROW_SIZE * TOS ( pattern-row-offset* )
     ;is-on-octave-col JSR2 ,&inc-octave JCN
     ;is-on-instrument-col JSR2 ,&inc-instrument JCN
         ;inc-note JSR2 ,&end JMP
@@ -198,38 +197,39 @@ RTN
         &inc-instrument
         ;inc-instrument JSR2
     &end
-    STH2r STA2
 RTN
 
-@inc-note ( pattern-row* -- pattern-row* )
-    SWP ( bring note & octave part to the top )
+@inc-note ( pattern-row-offset* -- )
+    ;pattern/note-octave ++ STH2k LDA
     DUP 10/
     INC
     #0c <~ ,&end JCN
         POP #00
     &end
     10* SWP #0f AND +
-    SWP ( restore row order )
+    STH2r STA
 RTN
 
-@inc-octave ( pattern-row* -- pattern-row* )
-    SWP ( bring note & octave part to the top )
+@inc-octave ( pattern-row-offset* -- )
+    ;pattern/note-octave ++ STH2k LDA
     DUP #0f AND
     INC
     #08 <~ ,&end JCN
         POP #00
     &end
     SWP #f0 AND +
-    SWP ( restore row order )
+    STH2r STA
 RTN
 
-@inc-instrument ( pattern-row* -- pattern-row* )
+@inc-instrument ( pattern-row-offset* -- )
+    ;pattern/inst ++ STH2k LDA
     DUP 10/
     INC
     #08 <~ ,&end JCN
         POP #00
     &end
     10* SWP #0f AND +
+    STH2r STA
 RTN
 
 
@@ -348,6 +348,8 @@ RTN
     LIT '- COLOR_OFF ;draw-glyph-uf1 JSR2
     LIT '- COLOR_OFF ;draw-glyph-uf1 JSR2
     LIT '- COLOR_OFF ;draw-glyph-uf1 JSR2
+    LIT '- COLOR_OFF ;draw-glyph-uf1 JSR2
+    LIT '- COLOR_OFF ;draw-glyph-uf1 JSR2
 RTN
 
 @to-hex-char ( n^ -- char^ )
@@ -365,8 +367,8 @@ RTN
 RTN
 
 @draw-uf1 ( string* color^ -- )
-    STH
     AUTO-NONE
+    STH
     &while
         LDAk STHrk ,draw-glyph-uf1 JSR
         INC2 LDAk ,&while JCN
@@ -423,14 +425,23 @@ e781 8100 0081 81e7
 "A#
 "B-
 
-( First byte high nibble is pitch 0 <= p <= b, low nibble is octave )
-( A first byte of zero marks a no trigger )
-( Second byte high nibble is the instrument index )
 @pattern
-0400 0000 0420 0000
-0410 0000 0420 0000
-0400 0000 0420 0000
-0410 0000 0400 0000
+[ &note-octave 04 &inst 00 &volume ff ]
+00 00 ff
+04 20 ff
+00 00 ff
+04 10 ff
+00 00 ff
+04 20 ff
+00 00 ff
+04 00 ff
+00 00 ff
+04 20 ff
+00 00 ff
+04 10 ff
+00 00 ff
+04 00 ff
+00 00 ff
 
 ( data address, size, should loop )
 @instruments
