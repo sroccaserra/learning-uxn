@@ -16,8 +16,9 @@
 %SCREEN_TILE_WIDTH { #20 }
 
 %COLOR_NOTE { #03 }
-%COLOR_OCTAVE { #02 }
-%COLOR_INSTRUMENT { #03 }
+%COLOR_OCTAVE { #03 }
+%COLOR_INSTRUMENT { #02 }
+%COLOR_VOLUME { #03 }
 %COLOR_OFF { #01 }
 
 %NB_INSTRUMENTS { #08 }
@@ -341,13 +342,22 @@ RTN
     COLOR_OCTAVE ;draw-glyph-uf1 JSR2
 
     ( draw instrument number )
-    STH2r ;pattern/instrument ++ LDA
+    STH2rk ;pattern/instrument ++ LDA
     10/ ;to-hex-char JSR2
     COLOR_INSTRUMENT ;draw-glyph-uf1 JSR2
+
+    ( draw volume left & right )
+    STH2r ;pattern/volume ++ LDA
+    DUP 10/ ;to-hex-char JSR2
+    COLOR_VOLUME ;draw-glyph-uf1 JSR2
+    #0f AND ;to-hex-char JSR2
+    COLOR_VOLUME ;draw-glyph-uf1 JSR2
 RTN
 
 @draw-empty-row ( -- )
     #0010 .Screen/x DEO2
+    LIT '- COLOR_OFF ;draw-glyph-uf1 JSR2
+    LIT '- COLOR_OFF ;draw-glyph-uf1 JSR2
     LIT '- COLOR_OFF ;draw-glyph-uf1 JSR2
     LIT '- COLOR_OFF ;draw-glyph-uf1 JSR2
     LIT '- COLOR_OFF ;draw-glyph-uf1 JSR2
