@@ -173,7 +173,7 @@ RTN
 RTN
 
 @dec-instrument ( pattern-row-offset* -- )
-    ;pattern/inst ++ STH2k LDA
+    ;pattern/instrument ++ STH2k LDA
     DUP 10/
     #01 -
     #08 <~ ,&end JCN
@@ -222,7 +222,7 @@ RTN
 RTN
 
 @inc-instrument ( pattern-row-offset* -- )
-    ;pattern/inst ++ STH2k LDA
+    ;pattern/instrument ++ STH2k LDA
     DUP 10/
     INC
     #08 <~ ,&end JCN
@@ -259,7 +259,7 @@ RTN
 
 @play ( pattern-row-offset^ -- )
     TOS STH2k
-    ;pattern/inst ++ LDA
+    ;pattern/instrument ++ LDA
     10/ INSTRUMENT_SIZE * TOS ;instruments ++
     LDA2k .Audio0/addr DEO2
     INC2 INC2
@@ -341,7 +341,7 @@ RTN
     COLOR_OCTAVE ;draw-glyph-uf1 JSR2
 
     ( draw instrument number )
-    STH2r ;pattern/inst ++ LDA
+    STH2r ;pattern/instrument ++ LDA
     10/ ;to-hex-char JSR2
     COLOR_INSTRUMENT ;draw-glyph-uf1 JSR2
 RTN
@@ -428,7 +428,7 @@ e781 8100 0081 81e7
 "B-
 
 @pattern
-[ &note-octave 04 &inst 00 &volume ff ]
+[ &note-octave 04 &instrument 00 &volume ff ]
 00 00 ff
 04 20 ff
 00 00 ff
