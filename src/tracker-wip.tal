@@ -86,7 +86,6 @@ RTN
 
 @init-sound ( -- )
     #0202 .Audio0/adsr DEO2 ( Enveloppe )
-    #22   .Audio0/volume DEO ( Volume/Balance )
 RTN
 
 @on-frame ( -- )
@@ -143,11 +142,17 @@ RTN
     PATTERN_ROW_SIZE * TOS ( pattern-row-offset* )
     ;is-on-octave-col JSR2 ,&dec-octave JCN
     ;is-on-instrument-col JSR2 ,&dec-instrument JCN
+    ;is-on-volume-l-col JSR2 ,&dec-volume-l JCN
+    ;is-on-volume-r-col JSR2 ,&dec-volume-r JCN
         ;dec-note JSR2 ,&end JMP
         &dec-octave
         ;dec-octave JSR2 ,&end JMP
         &dec-instrument
-        ;dec-instrument JSR2
+        ;dec-instrument JSR2 ,&end JMP
+        &dec-volume-l
+        ;dec-volume-l JSR2 ,&end JMP
+        &dec-volume-r
+        ;dec-volume-r JSR2
     &end
 RTN
 
@@ -184,6 +189,22 @@ RTN
     STH2r STA
 RTN
 
+@dec-volume-l ( pattern-row-offset* -- )
+    ;pattern/volume ++ STH2k LDA
+    DUP 10/
+    #01 - #0f AND
+    10* SWP #0f AND +
+    STH2r STA
+RTN
+
+@dec-volume-r ( pattern-row-offset* -- )
+    ;pattern/volume ++ STH2k LDA
+    DUP #0f AND
+    #01 - #0f AND
+    SWP #f0 AND +
+    STH2r STA
+RTN
+
 @inc-at-cursor ( -- )
     .cursor/i LDZ #03 < ,&end JCN
     .cursor/i LDZ #13 > ,&end JCN
@@ -192,11 +213,17 @@ RTN
     PATTERN_ROW_SIZE * TOS ( pattern-row-offset* )
     ;is-on-octave-col JSR2 ,&inc-octave JCN
     ;is-on-instrument-col JSR2 ,&inc-instrument JCN
+    ;is-on-volume-l-col JSR2 ,&inc-volume-l JCN
+    ;is-on-volume-r-col JSR2 ,&inc-volume-r JCN
         ;inc-note JSR2 ,&end JMP
         &inc-octave
         ;inc-octave JSR2 ,&end JMP
         &inc-instrument
-        ;inc-instrument JSR2
+        ;inc-instrument JSR2 ,&end JMP
+        &inc-volume-l
+        ;inc-volume-l JSR2 ,&end JMP
+        &inc-volume-r
+        ;inc-volume-r JSR2
     &end
 RTN
 
@@ -233,6 +260,21 @@ RTN
     STH2r STA
 RTN
 
+@inc-volume-l ( pattern-row-offset* -- )
+    ;pattern/volume ++ STH2k LDA
+    DUP 10/
+    INC #0f AND
+    10* SWP #0f AND +
+    STH2r STA
+RTN
+
+@inc-volume-r ( pattern-row-offset* -- )
+    ;pattern/volume ++ STH2k LDA
+    DUP #0f AND
+    INC #0f AND
+    SWP #f0 AND +
+    STH2r STA
+RTN
 
 @is-on-octave-col ( -- bool^ )
     .cursor/j LDZ #04 EQU
@@ -241,6 +283,15 @@ RTN
 @is-on-instrument-col ( -- bool^ )
     .cursor/j LDZ #05 EQU
 RTN
+
+@is-on-volume-l-col ( -- bool^ )
+    .cursor/j LDZ #06 EQU
+RTN
+
+@is-on-volume-r-col ( -- bool^ )
+    .cursor/j LDZ #07 EQU
+RTN
+
 
 @update ( -- )
     .timer LDZ2 ! ,&end JCN
@@ -260,7 +311,9 @@ RTN
 
 @play ( pattern-row-offset^ -- )
     TOS STH2k
-    ;pattern/instrument ++ LDA
+    ;pattern/volume ++ LDA
+    .Audio0/volume DEO
+    STH2rk ;pattern/instrument ++ LDA
     10/ INSTRUMENT_SIZE * TOS ;instruments ++
     LDA2k .Audio0/addr DEO2
     INC2 INC2
