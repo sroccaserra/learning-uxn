@@ -491,22 +491,22 @@ e781 8100 0081 81e7
 "B-
 
 @pattern
-[ &note-octave 04 &instrument 00 &volume ff ]
-00 00 ff
-04 20 ff
-00 00 ff
-04 10 ff
-00 00 ff
-04 20 ff
-00 00 ff
+[ &note-octave 04 &instrument 00 &volume dd ]
+00 00 dd
+04 20 66
+00 00 dd
+04 10 fd
+00 00 dd
+04 20 44
+04 10 24
 04 00 ff
-00 00 ff
-04 20 ff
-00 00 ff
+00 00 dd
+04 20 44
+00 00 dd
 04 10 ff
-00 00 ff
+00 00 dd
 04 00 ff
-00 00 ff
+00 00 dd
 
 ( data address, size, should loop )
 @instruments
