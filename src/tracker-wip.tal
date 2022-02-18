@@ -417,11 +417,14 @@ e781 8100 0081 81e7
 "A#
 "B-
 
-( First nibble is pitch 0 <= p <= b, second is octave )
-( Second byte first nibble is the instrument index )
+( First byte high nibble is pitch 0 <= p <= b, low nibble is octave )
+( A first byte of zero marks a no trigger )
+( Second byte high nibble is the instrument index )
 @pattern
-0400 0000 0420 0000 0410 0000 0420 0000
-0400 0000 0420 0000 0410 0000 0400 0000
+0400 0000 0420 0000
+0410 0000 0420 0000
+0400 0000 0420 0000
+0410 0000 0400 0000
 
 ( data address, size, should loop )
 @instruments
