@@ -63,7 +63,7 @@
 
     ;font #0900 ;font-path ;load-file JSR2
 
-    NB_INSTRUMENTS INC #00
+    NB_INSTRUMENTS #00
     &loop
         DUP INSTRUMENT_SIZE * TOS ;instruments ++
         ( load sample addr ) LDA2k SWP2 INC2 INC2
