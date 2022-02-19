@@ -65,10 +65,10 @@
 
     NB_INSTRUMENTS #00
     &loop
-        DUP INSTRUMENT_SIZE * TOS ;instruments ++
-        ( load sample addr ) LDA2k SWP2 INC2 INC2
-        ( load sample size ) LDA2k SWP2 INC2 INC2 INC2
-        ( load sample path adress ) LDA2
+        DUP INSTRUMENT_SIZE * TOS DUP2
+        ;instruments/address ++ LDA2 SWP2 DUP2
+        ;instruments/size ++ LDA2 SWP2
+        ;instruments/file-path ++ LDA2
         ;load-file JSR2
         INC NEQk ,&loop JCN
     POP POP
@@ -314,13 +314,10 @@ RTN
     ;pattern/volume ++ LDA
     .Audio0/volume DEO
     STH2rk ;pattern/instrument ++ LDA
-    10/ INSTRUMENT_SIZE * TOS ;instruments ++
-    LDA2k .Audio0/addr DEO2
-    INC2 INC2
-    LDA2k .Audio0/length DEO2
-    INC2 INC2
-    ( last byte of instrument is the loop config, invert it and shift it left for uxn )
-    LDA #00 EQU #70 SFT
+    10/ INSTRUMENT_SIZE * TOS DUP2 DUP2
+    ;instruments/address ++ LDA2 .Audio0/addr DEO2
+    ;instruments/size ++ LDA2 .Audio0/length DEO2
+    ;instruments/loop ++ LDA #00 EQU #70 SFT
     STH2r ;pattern/note-octave ++ LDA ( loop-bit^ note-and-octave^ )
     ;midi-note JSR2 + .Audio0/pitch DEO
 RTN
@@ -508,9 +505,8 @@ e781 8100 0081 81e7
 04 00 ff
 00 00 dd
 
-( data address, size, should loop )
 @instruments
-:kick 2000 00 :kick-path
+[ &address :kick &size 2000 &loop 00 &file-path :kick-path ]
 :snare 1000 00 :snare-path
 :chat 2000 00 :chat-path
 :ohat 1000 00 :ohat-path
