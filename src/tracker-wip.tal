@@ -305,25 +305,25 @@ RTN
 RTN
 
 @play-voice-trigger ( voice-row-offset^ voice-number^ -- )
-    #10 * ,&voice-offset STR
+    #10 * ,&audio-voice-offset STR
     TOS STH2k
     ;pattern/note-octave ++ LDA
     #00 EQU ,&no-trigger JCN
         STH2rk ;pattern/volume ++ LDA
-        .Audio0/volume ,&voice-offset LDR + DEO
+        .Audio0/volume ,&audio-voice-offset LDR + DEO
         STH2rk ;pattern/instrument ++ LDA
         10/ INSTRUMENT_SIZE * TOS DUP2 DUP2
-        ;instruments/address ++ LDA2 .Audio0/addr ,&voice-offset LDR + DEO2
-        ;instruments/size ++ LDA2 .Audio0/length ,&voice-offset LDR + DEO2
+        ;instruments/address ++ LDA2 .Audio0/addr ,&audio-voice-offset LDR + DEO2
+        ;instruments/size ++ LDA2 .Audio0/length ,&audio-voice-offset LDR + DEO2
         ;instruments/loop ++ LDA #00 EQU #70 SFT
         STH2r ;pattern/note-octave ++ LDA ( loop-bit^ note-and-octave^ )
-        ;midi-note JSR2 + .Audio0/pitch ,&voice-offset LDR + DEO
+        ;midi-note JSR2 + .Audio0/pitch ,&audio-voice-offset LDR + DEO
         ,&end JMP
         &no-trigger
         POP2r
     &end
 RTN
-&voice-offset $1
+&audio-voice-offset $1
 
 @draw ( -- )
     ;draw-background JSR2
