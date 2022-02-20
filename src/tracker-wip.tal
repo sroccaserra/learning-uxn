@@ -220,28 +220,24 @@ RTN
 RTN
 
 @inc-at-cursor ( -- )
-    .cursor/i LDZ #03 < ,&end JCN
-    .cursor/i LDZ #13 > ,&end JCN
+    .cursor/i LDZ #03 > #01 JCN RTN
+    .cursor/i LDZ #14 < #01 JCN RTN
+    .cursor/j LDZ INC X_START 8/ > #01 JCN RTN
 
-    .cursor/i LDZ #04 - ( pattern-row-index^ )
-    PATTERN_ROW_SIZE * TOS ( pattern-row-offset* )
-    ;is-on-octave-col JSR2 ,&inc-octave JCN
-    ;is-on-instrument-col JSR2 ,&inc-instrument JCN
-    ;is-on-volume-l-col JSR2 ,&inc-volume-l JCN
-    ;is-on-volume-r-col JSR2 ,&inc-volume-r JCN
-        ;inc-note JSR2 ,&end JMP
-        &inc-octave
-        ;inc-octave JSR2 ,&end JMP
-        &inc-instrument
-        ;inc-instrument JSR2 ,&end JMP
-        &inc-volume-l
-        ;inc-volume-l JSR2 ,&end JMP
-        &inc-volume-r
-        ;inc-volume-r JSR2
-    &end
+    .cursor/j LDZ X_START 8/ - DUP VOICE_WIDTH MOD SWP VOICE_WIDTH / ( voice-number^ column-number^ )
+    VOICE_SIZE * ( voice-number^ voice-column-offset^ )
+    .cursor/i LDZ #04 - PATTERN_ROW_SIZE * + TOS ( voice-number^ voice-row-offset* )
+    ROT ( voice-row-offset* voice-number^ )
+    [ COLUMN_NOTE >~ ] ,&no-note JCN POP ;inc-note JMP2 &no-note
+    [ COLUMN_OCTAVE !~ ] ,&no-octave JCN POP ;inc-octave JMP2 &no-octave
+    [ COLUMN_INSTRUMENT !~ ] ,&no-instrument JCN POP ;inc-instrument JMP2 &no-instrument
+    [ COLUMN_VOLUME_L !~ ] ,&no-volume-l JCN POP ;inc-volume-l JMP2 &no-volume-l
+    [ COLUMN_VOLUME_R !~ ] ,&no-volume-r JCN POP ;inc-volume-r JMP2 &no-volume-r
+    [ COLUMN_VOLUME_R INC <~ ] ,&known-column JCN P< "unk >P &known-column
+    POP POP
 RTN
 
-@inc-note ( pattern-row-offset* -- )
+@inc-note ( voice-row-offset* -- )
     ;pattern/note-octave ++ STH2k LDA
     DUP 10/
     INC
@@ -252,7 +248,7 @@ RTN
     STH2r STA
 RTN
 
-@inc-octave ( pattern-row-offset* -- )
+@inc-octave ( voice-row-offset* -- )
     ;pattern/note-octave ++ STH2k LDA
     DUP #0f AND
     INC
@@ -263,7 +259,7 @@ RTN
     STH2r STA
 RTN
 
-@inc-instrument ( pattern-row-offset* -- )
+@inc-instrument ( voice-row-offset* -- )
     ;pattern/instrument ++ STH2k LDA
     DUP 10/
     INC
@@ -274,7 +270,7 @@ RTN
     STH2r STA
 RTN
 
-@inc-volume-l ( pattern-row-offset* -- )
+@inc-volume-l ( voice-row-offset* -- )
     ;pattern/volume ++ STH2k LDA
     DUP 10/
     INC #0f AND
@@ -282,30 +278,13 @@ RTN
     STH2r STA
 RTN
 
-@inc-volume-r ( pattern-row-offset* -- )
+@inc-volume-r ( voice-row-offset* -- )
     ;pattern/volume ++ STH2k LDA
     DUP #0f AND
     INC #0f AND
     SWP #f0 AND +
     STH2r STA
 RTN
-
-@is-on-octave-col ( -- bool^ )
-    .cursor/j LDZ #05 EQU
-RTN
-
-@is-on-instrument-col ( -- bool^ )
-    .cursor/j LDZ #06 EQU
-RTN
-
-@is-on-volume-l-col ( -- bool^ )
-    .cursor/j LDZ #07 EQU
-RTN
-
-@is-on-volume-r-col ( -- bool^ )
-    .cursor/j LDZ #08 EQU
-RTN
-
 
 @update ( -- )
     .timer LDZ2 ! ,&end JCN
