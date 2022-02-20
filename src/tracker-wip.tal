@@ -25,6 +25,12 @@
 %INSTRUMENT_SIZE { #07 }
 
 %PATTERN_ROW_SIZE { #03 }
+%VOICE_SIZE { #30 } ( nb_steps * row_size )
+%VOICE_NUMBER { #01 }
+
+( The idea of a page is that a page displays 16 steps, or one bar. )
+( To extend to 2, 4, or 8 bars, several pages will be used, Octatrack-style.  )
+%PAGE_NB_STEPS { #10 }
 
 ( devices )
 
@@ -348,7 +354,6 @@ RTN
         SCREEN_TILE_WIDTH #00
         &loop-x
             DUP TOS 8** .Screen/x DEO2
-            ( OVR #10 * OVR + )
             #81 .Screen/sprite DEO
             INC NEQk ,&loop-x JCN
             POP2
@@ -357,11 +362,22 @@ RTN
 RTN
 
 @draw-pattern ( -- )
-    AUTO-X
-    #10 #00
+    VOICE_NUMBER #00
     &loop
+        DUP ;draw-voice JSR2
+        INC NEQk ,&loop JCN
+        POP2
+RTN
+
+@draw-voice ( voice-number^ -- )
+    DUP ,&voice-number STR
+    VOICE_SIZE * [ ,&voice-offset STR ]
+    AUTO-X
+    PAGE_NB_STEPS #00
+    &loop-voice
         DUP 8* #20 + TOS .Screen/y DEO2
         DUP PATTERN_ROW_SIZE * ( pattern-row-offset^ )
+        [ ,&voice-offset LDR ] +
         DUP TOS ;pattern ++ ( pattern-row-offset^ row-addr* )
         LDA #00 EQU ,&no-trigger JCN
             ;draw-row JSR2
@@ -370,9 +386,11 @@ RTN
             ;draw-empty-row JSR2
             POP
         &continue
-        INC NEQk ,&loop JCN
+        INC NEQk ,&loop-voice JCN
         POP POP
 RTN
+&voice-number $1
+&voice-offset $1
 
 @draw-row ( pattern-row-offset^ -- )
     #0010 .Screen/x DEO2
@@ -504,6 +522,11 @@ e781 8100 0081 81e7
 00 00 dd
 04 00 ff
 00 00 dd
+
+( three more voices with empty patterns )
+$30
+$30
+$30
 
 @instruments
 [ &address :kick &size 2000 &loop 00 &file-path :kick-path ]
