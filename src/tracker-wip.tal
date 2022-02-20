@@ -36,6 +36,7 @@
 %COLUMN_VOLUME_R { #05 }
 
 %X_START { #18 }
+%Y_START { #20 }
 
 ( The idea of a page is that a page displays 16 steps, or one bar. )
 ( To extend to 2, 4, or 8 bars, several pages will be used, Octatrack-style.  )
@@ -65,8 +66,8 @@
 |0100 @program
     #08 .timer/speed STZ
     #ff .play-head STZ
-    #04 .cursor/i STZ
-    #04 .cursor/j STZ
+    Y_START 8/ .cursor/i STZ
+    X_START 8/ #02 + .cursor/j STZ
 
     ( theme )
     #3a5d .System/r DEO2
@@ -159,7 +160,7 @@ RTN
 
     .cursor/j LDZ X_START 8/ - DUP VOICE_WIDTH MOD SWP VOICE_WIDTH / ( voice-number^ column-number^ )
     VOICE_SIZE * ( voice-number^ voice-column-offset^ )
-    .cursor/i LDZ #04 - PATTERN_ROW_SIZE * + TOS ( voice-number^ voice-row-offset* )
+    .cursor/i LDZ Y_START 8/ - PATTERN_ROW_SIZE * + TOS ( voice-number^ voice-row-offset* )
     ROT ( voice-row-offset* voice-number^ )
     [ COLUMN_NOTE >~ ] ,&no-note JCN POP ;dec-note JMP2 &no-note
     [ COLUMN_OCTAVE !~ ] ,&no-octave JCN POP ;dec-octave JMP2 &no-octave
@@ -226,7 +227,7 @@ RTN
 
     .cursor/j LDZ X_START 8/ - DUP VOICE_WIDTH MOD SWP VOICE_WIDTH / ( voice-number^ column-number^ )
     VOICE_SIZE * ( voice-number^ voice-column-offset^ )
-    .cursor/i LDZ #04 - PATTERN_ROW_SIZE * + TOS ( voice-number^ voice-row-offset* )
+    .cursor/i LDZ Y_START 8/ - PATTERN_ROW_SIZE * + TOS ( voice-number^ voice-row-offset* )
     ROT ( voice-row-offset* voice-number^ )
     [ COLUMN_NOTE >~ ] ,&no-note JCN POP ;inc-note JMP2 &no-note
     [ COLUMN_OCTAVE !~ ] ,&no-octave JCN POP ;inc-octave JMP2 &no-octave
@@ -329,7 +330,7 @@ RTN
     ;draw-background JSR2
 
     ( draw the title )
-    #0010 .Screen/x DEO2
+    #00 X_START .Screen/x DEO2
     #0010 .Screen/y DEO2
     ;title-txt #03 ;draw-uf1 JSR2
 
@@ -337,7 +338,7 @@ RTN
     ;draw-cursor JSR2
 
     ( draw the play heads )
-    .play-head LDZ 8* TOS #0020 ++ .Screen/y DEO2
+    .play-head LDZ 8* Y_START + TOS .Screen/y DEO2
     ;play-head-tile .Screen/addr DEO2
     VOICE_NUMBER #00
     &loop
@@ -375,7 +376,7 @@ RTN
     VOICE_SIZE * [ ,&voice-offset STR ]
     PAGE_NB_STEPS #00
     &loop-voice
-        DUP 8* #20 + TOS .Screen/y DEO2
+        DUP 8* Y_START + TOS .Screen/y DEO2
         DUP PATTERN_ROW_SIZE * ( pattern-row-offset^ )
         [ ,&voice-offset LDR ] +
         DUP TOS ;pattern ++ ( voice-row-offset^ row-addr* )
@@ -480,7 +481,7 @@ RTN
 @title-txt "Tracker 20 "WIP 00
 
 @bg-tile
-0000 0018 1800 0000
+0000 0000 0000 0000
 0000 0000 0000 0000
 
 @play-head-tile
