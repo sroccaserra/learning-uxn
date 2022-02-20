@@ -16,6 +16,7 @@
 - <https://compudanzas.net/uxn_tutorial.html>
 - <https://compudanzas.net/uxn_tutorial_day_2.html>
 - <https://forum.merveilles.town/thread/21/uxn-real-time-audio-5/>
+- <https://merveilles.town/@rostiger/107832336433230835>
 - <https://llllllll.co/t/uxn-virtual-computer/46103/8>
 - <https://llllllll.co/t/uxn-virtual-computer/46103/101>
 - <https://llllllll.co/t/uxn-virtual-computer/46103/314>
