@@ -29,6 +29,12 @@
 %VOICE_NUMBER { #04 }
 %VOICE_WIDTH { #07 }
 
+%COLUMN_NOTE { #01 }
+%COLUMN_OCTAVE { #02 }
+%COLUMN_INSTRUMENT { #03 }
+%COLUMN_VOLUME_L { #04 }
+%COLUMN_VOLUME_R { #05 }
+
 %X_START { #18 }
 
 ( The idea of a page is that a page displays 16 steps, or one bar. )
@@ -147,28 +153,24 @@ RTN
 RTN
 
 @dec-at-cursor ( -- )
-    .cursor/i LDZ #03 < ,&end JCN
-    .cursor/i LDZ #13 > ,&end JCN
+    .cursor/i LDZ #03 > #01 JCN RTN
+    .cursor/i LDZ #14 < #01 JCN RTN
+    .cursor/j LDZ INC X_START 8/ > #01 JCN RTN
 
-    .cursor/i LDZ #04 - ( pattern-row-index^ )
-    PATTERN_ROW_SIZE * TOS ( pattern-row-offset* )
-    ;is-on-octave-col JSR2 ,&dec-octave JCN
-    ;is-on-instrument-col JSR2 ,&dec-instrument JCN
-    ;is-on-volume-l-col JSR2 ,&dec-volume-l JCN
-    ;is-on-volume-r-col JSR2 ,&dec-volume-r JCN
-        ;dec-note JSR2 ,&end JMP
-        &dec-octave
-        ;dec-octave JSR2 ,&end JMP
-        &dec-instrument
-        ;dec-instrument JSR2 ,&end JMP
-        &dec-volume-l
-        ;dec-volume-l JSR2 ,&end JMP
-        &dec-volume-r
-        ;dec-volume-r JSR2
-    &end
+    .cursor/j LDZ X_START 8/ - DUP VOICE_WIDTH MOD SWP VOICE_WIDTH / ( voice-number^ column-number^ )
+    VOICE_SIZE * ( voice-number^ voice-column-offset^ )
+    .cursor/i LDZ #04 - PATTERN_ROW_SIZE * + TOS ( voice-number^ voice-row-offset* )
+    ROT ( voice-row-offset* voice-number^ )
+    [ COLUMN_NOTE >~ ] ,&no-note JCN POP ;dec-note JMP2 &no-note
+    [ COLUMN_OCTAVE !~ ] ,&no-octave JCN POP ;dec-octave JMP2 &no-octave
+    [ COLUMN_INSTRUMENT !~ ] ,&no-instrument JCN POP ;dec-instrument JMP2 &no-instrument
+    [ COLUMN_VOLUME_L !~ ] ,&no-volume-l JCN POP ;dec-volume-l JMP2 &no-volume-l
+    [ COLUMN_VOLUME_R !~ ] ,&no-volume-r JCN POP ;dec-volume-r JMP2 &no-volume-r
+    [ COLUMN_VOLUME_R INC <~ ] ,&known-column JCN P< "unk >P &known-column
+    POP POP
 RTN
 
-@dec-note ( pattern-row-offset* -- )
+@dec-note ( voice-row-offset* -- )
     ;pattern/note-octave ++ STH2k LDA
     DUP 10/
     #01 -
@@ -179,7 +181,7 @@ RTN
     STH2r STA
 RTN
 
-@dec-octave ( pattern-row-offset* -- )
+@dec-octave ( voice-row-offset* -- )
     ;pattern/note-octave ++ STH2k LDA
     DUP #0f AND
     #01 -
@@ -190,7 +192,7 @@ RTN
     STH2r STA
 RTN
 
-@dec-instrument ( pattern-row-offset* -- )
+@dec-instrument ( voice-row-offset* -- )
     ;pattern/instrument ++ STH2k LDA
     DUP 10/
     #01 -
@@ -201,7 +203,7 @@ RTN
     STH2r STA
 RTN
 
-@dec-volume-l ( pattern-row-offset* -- )
+@dec-volume-l ( voice-row-offset* -- )
     ;pattern/volume ++ STH2k LDA
     DUP 10/
     #01 - #0f AND
@@ -209,7 +211,7 @@ RTN
     STH2r STA
 RTN
 
-@dec-volume-r ( pattern-row-offset* -- )
+@dec-volume-r ( voice-row-offset* -- )
     ;pattern/volume ++ STH2k LDA
     DUP #0f AND
     #01 - #0f AND
@@ -543,9 +545,56 @@ e781 8100 0081 81e7
 00 00 dd
 
 ( three more voices with empty patterns )
-$30
-$30
-$30
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
+00 00 dd
 
 @instruments
 [ &address :kick &size 2000 &loop 00 &file-path :kick-path ]
