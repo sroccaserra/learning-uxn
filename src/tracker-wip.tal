@@ -29,6 +29,8 @@
 %VOICE_NUMBER { #04 }
 %VOICE_WIDTH { #07 }
 
+%X_START { #18 }
+
 ( The idea of a page is that a page displays 16 steps, or one bar. )
 ( To extend to 2, 4, or 8 bars, several pages will be used, Octatrack-style.  )
 %PAGE_NB_STEPS { #10 }
@@ -287,19 +289,19 @@ RTN
 RTN
 
 @is-on-octave-col ( -- bool^ )
-    .cursor/j LDZ #04 EQU
-RTN
-
-@is-on-instrument-col ( -- bool^ )
     .cursor/j LDZ #05 EQU
 RTN
 
-@is-on-volume-l-col ( -- bool^ )
+@is-on-instrument-col ( -- bool^ )
     .cursor/j LDZ #06 EQU
 RTN
 
-@is-on-volume-r-col ( -- bool^ )
+@is-on-volume-l-col ( -- bool^ )
     .cursor/j LDZ #07 EQU
+RTN
+
+@is-on-volume-r-col ( -- bool^ )
+    .cursor/j LDZ #08 EQU
 RTN
 
 
@@ -353,15 +355,19 @@ RTN
     ;draw-pattern JSR2
     ;draw-cursor JSR2
 
-    ( draw the play head )
-    #0008 .Screen/x DEO2
+    ( draw the play heads )
     .play-head LDZ 8* TOS #0020 ++ .Screen/y DEO2
-    ;tile2 .Screen/addr DEO2
-    #02 .Screen/sprite DEO
+    ;play-head-tile .Screen/addr DEO2
+    VOICE_NUMBER #00
+    &loop
+        X_START #08 - OVR VOICE_WIDTH * 8* + TOS .Screen/x DEO2
+        #81 .Screen/sprite DEO
+        INC NEQk ,&loop JCN
+        POP2
 RTN
 
 @draw-background ( -- )
-    ;tile1 .Screen/addr DEO2
+    ;bg-tile .Screen/addr DEO2
     SCREEN_TILE_HEIGHT #00
     &loop-y
         DUP TOS 8** .Screen/y DEO2
@@ -406,7 +412,7 @@ RTN
 &voice-offset $1
 
 @draw-row ( voice-row-offset^ voice-number^ -- )
-    VOICE_WIDTH * 8* TOS #0010 ++ .Screen/x DEO2
+    VOICE_WIDTH * 8* X_START + TOS .Screen/x DEO2
     TOS STH2k
 
     AUTO-X
@@ -436,7 +442,7 @@ RTN
 RTN
 
 @draw-empty-row ( -- )
-    VOICE_WIDTH * 8* TOS #0010 ++ .Screen/x DEO2
+    VOICE_WIDTH * 8* X_START + TOS .Screen/x DEO2
     LIT '- COLOR_OFF ;draw-glyph-uf1 JSR2
     LIT '- COLOR_OFF ;draw-glyph-uf1 JSR2
     LIT '- COLOR_OFF ;draw-glyph-uf1 JSR2
@@ -492,13 +498,13 @@ RTN
 
 @title-txt "Tracker 20 "WIP 00
 
-@tile1
+@bg-tile
 0000 0018 1800 0000
 0000 0000 0000 0000
 
-@tile2
-ff81 bda5 a5bd 81ff
-fffe c2de dede fe00
+@play-head-tile
+c0b0 8c83 838c b0c0
+c070 7c7f 7c70 4000
 
 @cursor-tile
 e781 8100 0081 81e7
