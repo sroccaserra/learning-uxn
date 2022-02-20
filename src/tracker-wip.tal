@@ -26,7 +26,8 @@
 
 %PATTERN_ROW_SIZE { #03 }
 %VOICE_SIZE { #30 } ( nb_steps * row_size )
-%VOICE_NUMBER { #01 }
+%VOICE_NUMBER { #04 }
+%VOICE_WIDTH { #07 }
 
 ( The idea of a page is that a page displays 16 steps, or one bar. )
 ( To extend to 2, 4, or 8 bars, several pages will be used, Octatrack-style.  )
@@ -304,28 +305,29 @@ RTN
 
     .play-head LDZ INC #10 MOD DUP .play-head STZ ( play-head^ )
     PATTERN_ROW_SIZE * ( pattern-row-offset^ )
-    DUP TOS ;pattern ++ ( pattern-row-offset^ note-octave-addr* )
-    LDA ,&play JCN
-    POP ,&skip JMP
-        &play
-        ;play JSR2
-        &skip
-        #00 .timer/beat STZ
+    ;play-voice-trigger JSR2
+    #00 .timer/beat STZ
     &end
     .timer/beat LDZk INC SWP STZ
 RTN
 
-@play ( pattern-row-offset^ -- )
+@play-voice-trigger ( pattern-row-offset^ -- )
     TOS STH2k
-    ;pattern/volume ++ LDA
-    .Audio0/volume DEO
-    STH2rk ;pattern/instrument ++ LDA
-    10/ INSTRUMENT_SIZE * TOS DUP2 DUP2
-    ;instruments/address ++ LDA2 .Audio0/addr DEO2
-    ;instruments/size ++ LDA2 .Audio0/length DEO2
-    ;instruments/loop ++ LDA #00 EQU #70 SFT
-    STH2r ;pattern/note-octave ++ LDA ( loop-bit^ note-and-octave^ )
-    ;midi-note JSR2 + .Audio0/pitch DEO
+    ;pattern/note-octave ++ LDA
+    #00 EQU ,&no-trigger JCN
+        STH2rk ;pattern/volume ++ LDA
+        .Audio0/volume DEO
+        STH2rk ;pattern/instrument ++ LDA
+        10/ INSTRUMENT_SIZE * TOS DUP2 DUP2
+        ;instruments/address ++ LDA2 .Audio0/addr DEO2
+        ;instruments/size ++ LDA2 .Audio0/length DEO2
+        ;instruments/loop ++ LDA #00 EQU #70 SFT
+        STH2r ;pattern/note-octave ++ LDA ( loop-bit^ note-and-octave^ )
+        ;midi-note JSR2 + .Audio0/pitch DEO
+        ,&end JMP
+        &no-trigger
+        POP2r
+    &end
 RTN
 
 @draw ( -- )
@@ -372,18 +374,17 @@ RTN
 @draw-voice ( voice-number^ -- )
     DUP ,&voice-number STR
     VOICE_SIZE * [ ,&voice-offset STR ]
-    AUTO-X
     PAGE_NB_STEPS #00
     &loop-voice
         DUP 8* #20 + TOS .Screen/y DEO2
         DUP PATTERN_ROW_SIZE * ( pattern-row-offset^ )
         [ ,&voice-offset LDR ] +
-        DUP TOS ;pattern ++ ( pattern-row-offset^ row-addr* )
+        DUP TOS ;pattern ++ ( voice-row-offset^ row-addr* )
         LDA #00 EQU ,&no-trigger JCN
-            ;draw-row JSR2
+            ,&voice-number LDR ;draw-row JSR2
             ,&continue JMP
             &no-trigger
-            ;draw-empty-row JSR2
+            ,&voice-number LDR ;draw-empty-row JSR2
             POP
         &continue
         INC NEQk ,&loop-voice JCN
@@ -392,11 +393,11 @@ RTN
 &voice-number $1
 &voice-offset $1
 
-@draw-row ( pattern-row-offset^ -- )
-    #0010 .Screen/x DEO2
-
+@draw-row ( voice-row-offset^ voice-number^ -- )
+    VOICE_WIDTH * 8* TOS #0010 ++ .Screen/x DEO2
     TOS STH2k
 
+    AUTO-X
     ;pattern/note-octave ++ LDA
     ( draw note label )
     DUP 10/ 2*
@@ -423,7 +424,7 @@ RTN
 RTN
 
 @draw-empty-row ( -- )
-    #0010 .Screen/x DEO2
+    VOICE_WIDTH * 8* TOS #0010 ++ .Screen/x DEO2
     LIT '- COLOR_OFF ;draw-glyph-uf1 JSR2
     LIT '- COLOR_OFF ;draw-glyph-uf1 JSR2
     LIT '- COLOR_OFF ;draw-glyph-uf1 JSR2
