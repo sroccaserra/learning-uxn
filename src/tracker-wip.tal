@@ -93,6 +93,9 @@ RTN
 
 @init-sound ( -- )
     #0202 .Audio0/adsr DEO2 ( Enveloppe )
+    #0202 .Audio1/adsr DEO2 ( Enveloppe )
+    #0202 .Audio2/adsr DEO2 ( Enveloppe )
+    #0202 .Audio3/adsr DEO2 ( Enveloppe )
 RTN
 
 @on-frame ( -- )
@@ -303,32 +306,41 @@ RTN
 @update ( -- )
     .timer LDZ2 ! ,&end JCN
 
-    .play-head LDZ INC #10 MOD DUP .play-head STZ ( play-head^ )
+    .play-head LDZ INC #10 MOD
+    DUP .play-head STZ ( play-head^ )
     PATTERN_ROW_SIZE * ( pattern-row-offset^ )
-    ;play-voice-trigger JSR2
+    STH
+    VOICE_NUMBER #00
+    &loop
+        DUP VOICE_SIZE * STHrk + ( voice-row-offset^ )
+        OVR ;play-voice-trigger JSR2
+        INC NEQk ,&loop JCN
+        POP2 POPr
     #00 .timer/beat STZ
     &end
     .timer/beat LDZk INC SWP STZ
 RTN
 
-@play-voice-trigger ( pattern-row-offset^ -- )
+@play-voice-trigger ( voice-row-offset^ voice-number^ -- )
+    #10 * ,&voice-offset STR
     TOS STH2k
     ;pattern/note-octave ++ LDA
     #00 EQU ,&no-trigger JCN
         STH2rk ;pattern/volume ++ LDA
-        .Audio0/volume DEO
+        .Audio0/volume ,&voice-offset LDR + DEO
         STH2rk ;pattern/instrument ++ LDA
         10/ INSTRUMENT_SIZE * TOS DUP2 DUP2
-        ;instruments/address ++ LDA2 .Audio0/addr DEO2
-        ;instruments/size ++ LDA2 .Audio0/length DEO2
+        ;instruments/address ++ LDA2 .Audio0/addr ,&voice-offset LDR + DEO2
+        ;instruments/size ++ LDA2 .Audio0/length ,&voice-offset LDR + DEO2
         ;instruments/loop ++ LDA #00 EQU #70 SFT
         STH2r ;pattern/note-octave ++ LDA ( loop-bit^ note-and-octave^ )
-        ;midi-note JSR2 + .Audio0/pitch DEO
+        ;midi-note JSR2 + .Audio0/pitch ,&voice-offset LDR + DEO
         ,&end JMP
         &no-trigger
         POP2r
     &end
 RTN
+&voice-offset $1
 
 @draw ( -- )
     ;draw-background JSR2
