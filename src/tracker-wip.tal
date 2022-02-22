@@ -60,6 +60,7 @@
 @timer [ &beat $1 &speed $1 ]
 @play-head $1
 @cursor [ &i $1 &j $1 ]
+@is-playing $1
 
 ( init )
 
@@ -68,6 +69,7 @@
     #ff .play-head STZ
     Y_START 8/ .cursor/i STZ
     X_START 8/ #02 + .cursor/j STZ
+    #01 .is-playing STZ
 
     ( theme )
     #3a5d .System/r DEO2
@@ -127,6 +129,7 @@ BRK
     [ LIT 'j ] !~ ,&no-down-k JCN ;cursor-down JSR2 &no-down-k
     [ LIT 'k ] !~ ,&no-up-k JCN ;cursor-up JSR2 &no-up-k
     [ LIT 'l ] !~ ,&no-right-k JCN ;cursor-right JSR2 &no-right-k
+    #20 !~ ,&no-space JCN ;toggle-play JSR2 &no-space
     POP
 BRK
 
@@ -151,6 +154,10 @@ RTN
 
 @cursor-right ( -- )
     .cursor/j LDZ INC .cursor/j STZ
+RTN
+
+@toggle-play
+    .is-playing LDZ #00 EQU .is-playing STZ
 RTN
 
 @dec-at-cursor ( -- )
@@ -288,6 +295,7 @@ RTN
 RTN
 
 @update ( -- )
+    .is-playing LDZ #01 EQU #01 JCN RTN
     .timer LDZ2 ! ,&end JCN
 
     .play-head LDZ INC #10 MOD
