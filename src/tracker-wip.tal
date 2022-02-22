@@ -61,6 +61,7 @@
 @play-head $1
 @cursor [ &i $1 &j $1 ]
 @is-playing $1
+@is-mute [ &0 $1 &1 $1 &2 $1 &3 $1 ]
 
 ( init )
 
@@ -130,6 +131,7 @@ BRK
     [ LIT 'k ] !~ ,&no-up-k JCN ;cursor-up JSR2 &no-up-k
     [ LIT 'l ] !~ ,&no-right-k JCN ;cursor-right JSR2 &no-right-k
     #20 !~ ,&no-space JCN ;toggle-play JSR2 &no-space
+    [ LIT 'm ] !~ ,&no-m JCN ;toggle-mute JSR2 &no-m
     POP
 BRK
 
@@ -158,6 +160,11 @@ RTN
 
 @toggle-play
     .is-playing LDZ #00 EQU .is-playing STZ
+RTN
+
+@toggle-mute
+    .cursor/j LDZ X_START 8/ - VOICE_WIDTH / ( voice-number^ )
+    .is-mute + DUP LDZ #00 EQU SWP STZ
 RTN
 
 @dec-at-cursor ( -- )
@@ -304,8 +311,10 @@ RTN
     STH
     VOICE_NUMBER #00
     &loop
+        DUP .is-mute + LDZ ,&continue JCN
         DUP VOICE_SIZE * STHrk + ( voice-row-offset^ )
         OVR ;play-voice-trigger JSR2
+        &continue
         INC NEQk ,&loop JCN
         POP2 POPr
     #00 .timer/beat STZ
@@ -347,9 +356,14 @@ RTN
 
     ( draw the play heads )
     .play-head LDZ 8* Y_START + TOS .Screen/y DEO2
-    ;play-head-tile .Screen/addr DEO2
     VOICE_NUMBER #00
     &loop
+        DUP .is-mute + LDZ ,&if-mute JCN
+            ;play-head-tile .Screen/addr DEO2
+            ,&endif JMP
+            &if-mute
+            ;mute-tile .Screen/addr DEO2
+            &endif
         X_START #08 - OVR VOICE_WIDTH * 8* + TOS .Screen/x DEO2
         #81 .Screen/sprite DEO
         INC NEQk ,&loop JCN
@@ -495,6 +509,10 @@ RTN
 @play-head-tile
 c0b0 8c83 838c b0c0
 c070 7c7f 7c70 4000
+
+@mute-tile
+0066 5a24 245a 6600
+0066 3c18 3c66 0000
 
 @cursor-tile
 e781 8100 0081 81e7
