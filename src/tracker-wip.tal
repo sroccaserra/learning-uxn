@@ -130,6 +130,8 @@ BRK
     [ LIT 'j ] !~ ,&no-down-k JCN ;cursor-down JSR2 &no-down-k
     [ LIT 'k ] !~ ,&no-up-k JCN ;cursor-up JSR2 &no-up-k
     [ LIT 'l ] !~ ,&no-right-k JCN ;cursor-right JSR2 &no-right-k
+    [ LIT 'b ] !~ ,&no-b JCN ;voice-left JSR2 &no-b
+    [ LIT 'w ] !~ ,&no-w JCN ;voice-right JSR2 &no-w
     #20 !~ ,&no-space JCN ;toggle-play JSR2 &no-space
     [ LIT 'm ] !~ ,&no-m JCN ;toggle-mute JSR2 &no-m
     POP
@@ -156,6 +158,14 @@ RTN
 
 @cursor-right ( -- )
     .cursor/j LDZ INC .cursor/j STZ
+RTN
+
+@voice-left ( -- )
+    .cursor/j LDZ VOICE_WIDTH - .cursor/j STZ
+RTN
+
+@voice-right ( -- )
+    .cursor/j LDZ VOICE_WIDTH + .cursor/j STZ
 RTN
 
 @toggle-play
