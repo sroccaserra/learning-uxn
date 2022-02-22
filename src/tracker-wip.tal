@@ -145,27 +145,27 @@ BRK
 BRK
 
 @cursor-up ( -- )
-    .cursor/i LDZ #01 - .cursor/i STZ
+    .cursor/i LDZ #01 - SCREEN_TILE_HEIGHT #01 - MIN .cursor/i STZ
 RTN
 
 @cursor-down ( -- )
-    .cursor/i LDZ INC .cursor/i STZ
+    .cursor/i LDZ INC SCREEN_TILE_HEIGHT MOD .cursor/i STZ
 RTN
 
 @cursor-left ( -- )
-    .cursor/j LDZ #01 - .cursor/j STZ
+    .cursor/j LDZ #01 - SCREEN_TILE_WIDTH MOD .cursor/j STZ
 RTN
 
 @cursor-right ( -- )
-    .cursor/j LDZ INC .cursor/j STZ
+    .cursor/j LDZ INC SCREEN_TILE_WIDTH MOD .cursor/j STZ
 RTN
 
 @voice-left ( -- )
-    .cursor/j LDZ VOICE_WIDTH - .cursor/j STZ
+    .cursor/j LDZ VOICE_WIDTH - SCREEN_TILE_WIDTH MOD .cursor/j STZ
 RTN
 
 @voice-right ( -- )
-    .cursor/j LDZ VOICE_WIDTH + .cursor/j STZ
+    .cursor/j LDZ VOICE_WIDTH + SCREEN_TILE_WIDTH MOD .cursor/j STZ
 RTN
 
 @toggle-play
