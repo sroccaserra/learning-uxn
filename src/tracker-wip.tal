@@ -368,12 +368,16 @@ RTN
     .play-head LDZ 8* Y_START + TOS .Screen/y DEO2
     VOICE_NUMBER #00
     &loop
+        .is-playing LDZ ,&next JCN
+            ;pause-tile .Screen/addr DEO2
+            ,&end-tile JMP
+        &next
         DUP .is-mute + LDZ ,&if-mute JCN
             ;play-head-tile .Screen/addr DEO2
-            ,&endif JMP
+            ,&end-tile JMP
             &if-mute
             ;mute-tile .Screen/addr DEO2
-            &endif
+        &end-tile
         X_START #08 - OVR VOICE_WIDTH * 8* + TOS .Screen/x DEO2
         #81 .Screen/sprite DEO
         INC NEQk ,&loop JCN
@@ -519,6 +523,10 @@ RTN
 @play-head-tile
 c0b0 8c83 838c b0c0
 c070 7c7f 7c70 4000
+
+@pause-tile
+eeaa aaaa aaaa aaee
+ee66 6666 6666 6622
 
 @mute-tile
 0066 5a24 245a 6600
