@@ -92,6 +92,7 @@
         INC NEQk ,&loop JCN
     POP POP
 
+    ;load JSR2
     ;init-sound JSR2
     ;on-frame .Screen/vector DEO2
     ;on-controller .Controller/vector DEO2
@@ -141,6 +142,7 @@ BRK
     .Controller/key DEI
     [ LIT 'x ] !~ ,&no-ctrl-x JCN ;dec-at-cursor JSR2 &no-ctrl-x
     [ LIT 'a ] !~ ,&no-ctrl-a JCN ;inc-at-cursor JSR2 &no-ctrl-a
+    [ LIT 's ] !~ ,&no-ctrl-s JCN ;save JSR2 &no-ctrl-s
     POP
 BRK
 
@@ -175,6 +177,18 @@ RTN
 @toggle-mute
     .cursor/j LDZ X_START 8/ - VOICE_WIDTH / ( voice-number^ )
     .is-mute + DUP LDZ #00 EQU SWP STZ
+RTN
+
+@save
+    ;pattern/end ;pattern SUB2 .File/length DEO2
+    ;file-name .File/name DEO2
+    ;pattern .File/write DEO2
+RTN
+
+@load
+    ;pattern/end ;pattern SUB2 .File/length DEO2
+    ;file-name .File/name DEO2
+    ;pattern .File/read DEO2
 RTN
 
 @dec-at-cursor ( -- )
@@ -621,6 +635,7 @@ e781 8100 0081 81e7
 00 00 dd
 00 00 dd
 00 00 dd
+&end
 
 @instruments
 [ &address :kick &size 2000 &loop 00 &file-path :kick-path ]
@@ -658,3 +673,5 @@ e781 8100 0081 81e7
 
 @font-path "fonts/bbcmicro8.uf1 00
 @font $0900
+
+@file-name "pattern.raw 00
