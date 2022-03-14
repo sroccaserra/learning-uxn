@@ -41,10 +41,8 @@
 
     ;file-name .File/name DEO2
     ;parse-header JSR2
-    .image-width LDZ2 DEBUG2
-    .image-height LDZ2 DEBUG2
-    ;parse-data JSR2
-    DUMP HALT
+    ;set-pixel ;parse-data JSR2
+
 BRK
 
 @parse-header ( -- )
@@ -77,15 +75,38 @@ HALT BRK
         POP
 RTN
 
-@get-char
+@get-char ( -- char^ )
     ;&char .File/read DEO2
     LIT &char $1
 RTN
 
-@parse-data ( -- )
+@parse-data ( set-pixel-fn* -- )
+    ;&set-pixel-fn STA2
+
+    ;get-char JSR2
+    STH
+
+    #0000 #0000 OVR2 NIP 8MOD #07 SWP - STHrk SWP SFT #01 AND ;&set-pixel JSR2
+    #0001 #0000 OVR2 NIP 8MOD #07 SWP - STHrk SWP SFT #01 AND ;&set-pixel JSR2
+    #0002 #0000 OVR2 NIP 8MOD #07 SWP - STHrk SWP SFT #01 AND ;&set-pixel JSR2
+    #0003 #0000 OVR2 NIP 8MOD #07 SWP - STHrk SWP SFT #01 AND ;&set-pixel JSR2
+    #0004 #0000 OVR2 NIP 8MOD #07 SWP - STHrk SWP SFT #01 AND ;&set-pixel JSR2
+    #0005 #0000 OVR2 NIP 8MOD #07 SWP - STHrk SWP SFT #01 AND ;&set-pixel JSR2
+    #0006 #0000 OVR2 NIP 8MOD #07 SWP - STHrk SWP SFT #01 AND ;&set-pixel JSR2
+    #0007 #0000 OVR2 NIP 8MOD #07 SWP - STHrk SWP SFT #01 AND ;&set-pixel JSR2
+
+    POPr
+RTN
+&set-pixel LIT2 &set-pixel-fn $2 JMP2
+
+@set-pixel ( x* y* value^ -- )
+    STH
+    .Screen/y DEO2
+    .Screen/x DEO2
+    STHr .Screen/pixel DEO
 RTN
 
 ~src/common.tal
 
-@file-name "assets/carveplace.pbm 00
+@file-name "assets/test_raw.pbm 00
 @error-wrong-magic-number "Error: 20 "wrong 20 "magic 20 "number 20 00
