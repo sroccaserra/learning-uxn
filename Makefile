@@ -7,7 +7,7 @@ default: tracker-wip
 .PHONY: %
 .PRECIOUS: bin/%.rom
 %: bin/%.rom
-	uxnemu -s 2 $<
+	uxnemu -s 2 $< 2>&1 | sed -E -f opcodes.sed
 
 bin/%.rom: src/%.tal $(TAL_FILES) $(ASSETS)
 	uxnasm $< $@
