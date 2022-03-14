@@ -1,0 +1,91 @@
+( macros )
+
+~src/macros.tal
+
+( constants )
+
+%SCREEN_WIDTH { #02c0 }
+%SCREEN_HEIGHT { #01c0 }
+
+%SCREEN_TILE_WIDTH { #38 }
+%SCREEN_TILE_HEIGHT { #58 }
+
+( devices )
+
+|00 @System     [ &vector $2 &wst $1 &rst $1 &eaddr $2 &ecode $1 &pad $1 &r $2 &g $2 &b $2 &debug $1 &halt $1 ]
+|10 @Console    [ &vector $2 &read $1 &pad $5 &write $1 &error $1 ]
+|20 @Screen     [ &vector $2 &width $2 &height $2 &auto $1 &pad $1 &x $2 &y $2 &addr $2 &pixel $1 &sprite $1 ]
+|30 @Audio0     [ &vector $2 &position $2 &output $1 &pad $3 &adsr $2 &length $2 &addr $2 &volume $1 &pitch $1 ]
+|40 @Audio1     [ &vector $2 &position $2 &output $1 &pad $3 &adsr $2 &length $2 &addr $2 &volume $1 &pitch $1 ]
+|50 @Audio2     [ &vector $2 &position $2 &output $1 &pad $3 &adsr $2 &length $2 &addr $2 &volume $1 &pitch $1 ]
+|60 @Audio3     [ &vector $2 &position $2 &output $1 &pad $3 &adsr $2 &length $2 &addr $2 &volume $1 &pitch $1 ]
+|80 @Controller [ &vector $2 &button $1 &key $1 ]
+|a0 @File       [ &vector $2 &success $2 &stat $2 &delete $1 &append $1 &name $2 &length $2 &read $2 &write $2 ]
+
+( zero page )
+
+|00
+@image-width $3
+@image-height $3
+
+( init )
+
+|0100 @program
+    ( theme )
+    #3a5d .System/r DEO2
+    #3acd .System/g DEO2
+    #3aad .System/b DEO2
+
+    SCREEN_WIDTH .Screen/width DEO2
+    SCREEN_HEIGHT .Screen/height DEO2
+
+    ;file-name .File/name DEO2
+    ;parse-header JSR2
+    .image-width LDZ2 DEBUG2
+    .image-height LDZ2 DEBUG2
+    ;parse-data JSR2
+    DUMP HALT
+BRK
+
+@parse-header ( -- )
+    #0003 .File/length DEO2
+    ;&buffer .File/read DEO2
+    ;&buffer LDA2 LIT2 "P4 NEQ2 ,&wrong-magic-number JCN
+
+    #0001 .File/length DEO2
+    ;parse-number JSR2
+    .image-width STZ2
+    ;parse-number JSR2
+    .image-height STZ2
+RTN
+&buffer $4
+&wrong-magic-number
+    ;error-wrong-magic-number ;print-str JSR2 ;&buffer ;print-str JSR2 LF
+HALT BRK
+
+@parse-number ( -- number* )
+    #0000
+    &loop
+        ;get-char JSR2
+        DUP LIT '0 < ,&end JCN
+        LIT '0 - TOS
+        SWP2 #000a **
+        ADD2
+        ,&loop JMP
+
+        &end
+        POP
+RTN
+
+@get-char
+    ;&char .File/read DEO2
+    LIT &char $1
+RTN
+
+@parse-data ( -- )
+RTN
+
+~src/common.tal
+
+@file-name "assets/carveplace.pbm 00
+@error-wrong-magic-number "Error: 20 "wrong 20 "magic 20 "number 20 00
