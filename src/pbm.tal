@@ -2,6 +2,8 @@
 
 ~src/macros.tal
 
+%BIT { SFT #01 AND }
+
 ( constants )
 
 %SCREEN_WIDTH { #02c0 }
@@ -83,18 +85,13 @@ RTN
 @parse-data ( set-pixel-fn* -- )
     ;&set-pixel-fn STA2
 
-    ;get-char JSR2
-    STH
+    ;get-char JSR2 STH
 
-    #0000 #0000 OVR2 NIP 8MOD #07 SWP - STHrk SWP SFT #01 AND ;&set-pixel JSR2
-    #0001 #0000 OVR2 NIP 8MOD #07 SWP - STHrk SWP SFT #01 AND ;&set-pixel JSR2
-    #0002 #0000 OVR2 NIP 8MOD #07 SWP - STHrk SWP SFT #01 AND ;&set-pixel JSR2
-    #0003 #0000 OVR2 NIP 8MOD #07 SWP - STHrk SWP SFT #01 AND ;&set-pixel JSR2
-    #0004 #0000 OVR2 NIP 8MOD #07 SWP - STHrk SWP SFT #01 AND ;&set-pixel JSR2
-    #0005 #0000 OVR2 NIP 8MOD #07 SWP - STHrk SWP SFT #01 AND ;&set-pixel JSR2
-    #0006 #0000 OVR2 NIP 8MOD #07 SWP - STHrk SWP SFT #01 AND ;&set-pixel JSR2
-    #0007 #0000 OVR2 NIP 8MOD #07 SWP - STHrk SWP SFT #01 AND ;&set-pixel JSR2
-
+    #0008 #0000
+    &loop-char
+        DUP2 #0000 OVR2 NIP 8MOD #07 SWP - STHrk SWP BIT ;&set-pixel JSR2
+        INC2 NEQ2k ,&loop-char JCN
+        POP2 POP2
     POPr
 RTN
 &set-pixel LIT2 &set-pixel-fn $2 JMP2
