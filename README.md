@@ -2,6 +2,14 @@
 
 ![Screenshot](images/screenshot.png?raw=true)
 
+### Pbm file display
+
+> The P4 binary format of the same image represents each pixel with a single
+> bit, packing 8 pixels per byte, with the first pixel as the most significant
+> bit. Extra bits are added at the end of each row to fill a whole byte.
+
+- https://en.wikipedia.org/wiki/Netpbm
+
 ### References
 
 - <https://wiki.xxiivv.com/site/uxntal.html>
