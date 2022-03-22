@@ -2,7 +2,7 @@ TAL_FILES=$(wildcard src/*.tal)
 ASSETS=$(wildcard assets/*.tal)
 
 .PHONY: default
-default: tracker-wip
+default: pbm
 
 .PHONY: %
 .PRECIOUS: bin/%.rom
