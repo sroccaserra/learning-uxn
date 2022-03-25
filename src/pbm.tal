@@ -77,24 +77,32 @@ RTN
     ;&set-pixel-fn STA2
 
     ( w* h* )
-    &loop-row
-        ;get-char JSR2 STH
-        #0008 #0000
-        &loop-char
-            DUP2 ,&i LDR2 OVR2 NIP 8MOD #07 SWP - STHrk SWP BIT ;&set-pixel JSR2
-            INC2 NEQ2k ,&loop-char JCN
-            POP2 POP2
-        POPr
+    SWP2 #0007 ADD2 #0008 DIV2 SWP2
 
-        ,&i LDR2 INC2 DUP2 ,&i STR2
-        ( w* h* i* )
-        OVR2 NEQ2 ,&loop-row JCN
-        POP2
+    ( nb-chars-by-row* h* )
+    &loop-y
+        #0000 ,&nb-char STR2
+        OVR2
+        &loop-chars
+            ;get-char JSR2 STH
+            #0008 #0000
+            &loop-bits
+                DUP2 ,&nb-char LDR2 #0008 MUL2 ADD2 OVR2 ,&y LDR2 SWP2 NIP 8MOD #07 SWP - STHrk SWP BIT ;&set-pixel JSR2
+                INC2 NEQ2k ,&loop-bits JCN
+                POP2 POP2
+            POPr
+            ,&nb-char LDR2 INC2 DUP2 ,&nb-char STR2
+            OVR2 NEQ2 ,&loop-chars JCN
+            POP2
 
-    ( w* ) DEBUG2
+        ,&y LDR2 INC2 DUP2 ,&y STR2
+        ( nb-chars-by-row* h* y* )
+        OVR2 NEQ2 ,&loop-y JCN
+        POP2 POP2
 RTN
 &set-pixel LIT2 &set-pixel-fn $2 JMP2
-&i $2
+&y $2
+&nb-char $2
 
 @set-pixel ( x* y* value^ -- )
     STH
