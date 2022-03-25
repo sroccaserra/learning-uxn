@@ -22,8 +22,6 @@
 ( zero page )
 
 |00
-@image-width $3
-@image-height $3
 
 ( init )
 
@@ -42,16 +40,14 @@
 
 BRK
 
-@parse-header ( -- )
+@parse-header ( -- w* h* )
     #0003 .File/length DEO2
     ;&buffer .File/read DEO2
     ;&buffer LDA2 LIT2 "P4 NEQ2 ,&wrong-magic-number JCN
 
     #0001 .File/length DEO2
     ;parse-number JSR2
-    .image-width STZ2
     ;parse-number JSR2
-    .image-height STZ2
 RTN
 &buffer $4
 &wrong-magic-number
@@ -77,14 +73,15 @@ RTN
     LIT &char $1
 RTN
 
-@parse-data ( set-pixel-fn* -- )
+@parse-data ( w* h* set-pixel-fn* -- )
     ;&set-pixel-fn STA2
+    DEBUG2 DEBUG2
 
     ;get-char JSR2 STH
 
     #0008 #0000
     &loop-char
-        DUP2 #0000 OVR2 NIP 8MOD #07 SWP - STHrk SWP BIT ;&set-pixel JSR2
+        DUP2 #0000 ( y* ) OVR2 NIP 8MOD #07 SWP - STHrk SWP BIT ;&set-pixel JSR2
         INC2 NEQ2k ,&loop-char JCN
         POP2 POP2
     POPr
@@ -100,5 +97,5 @@ RTN
 
 ~src/common.tal
 
-@file-name "assets/test_raw.pbm 00
+@file-name "images/count_8.pbm 00
 @error-wrong-magic-number "Error: 20 "wrong 20 "magic 20 "number 20 00
