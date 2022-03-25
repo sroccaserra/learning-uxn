@@ -75,18 +75,26 @@ RTN
 
 @parse-data ( w* h* set-pixel-fn* -- )
     ;&set-pixel-fn STA2
-    DEBUG2 DEBUG2
-
-    ;get-char JSR2 STH
 
     #0008 #0000
-    &loop-char
-        DUP2 #0000 ( y* ) OVR2 NIP 8MOD #07 SWP - STHrk SWP BIT ;&set-pixel JSR2
-        INC2 NEQ2k ,&loop-char JCN
+    &loop-row
+        ;get-char JSR2 STH
+        #0008 #0000
+        &loop-char
+            DUP2 ,&i LDR2 OVR2 NIP 8MOD #07 SWP - STHrk SWP BIT ;&set-pixel JSR2
+            INC2 NEQ2k ,&loop-char JCN
+            POP2 POP2
+        POPr
+
+        ,&i LDR2 INC2 DUP2 ,&i STR2
+        POP2
+        INC2 NEQ2k ,&loop-row JCN
         POP2 POP2
-    POPr
+
+    DEBUG2 DEBUG2
 RTN
 &set-pixel LIT2 &set-pixel-fn $2 JMP2
+&i $2
 
 @set-pixel ( x* y* value^ -- )
     STH
