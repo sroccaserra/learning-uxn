@@ -76,7 +76,7 @@ RTN
 @parse-data ( w* h* set-pixel-fn* -- )
     ;&set-pixel-fn STA2
 
-    #0008 #0000
+    ( w* h* )
     &loop-row
         ;get-char JSR2 STH
         #0008 #0000
@@ -87,11 +87,11 @@ RTN
         POPr
 
         ,&i LDR2 INC2 DUP2 ,&i STR2
+        ( w* h* i* )
+        OVR2 NEQ2 ,&loop-row JCN
         POP2
-        INC2 NEQ2k ,&loop-row JCN
-        POP2 POP2
 
-    DEBUG2 DEBUG2
+    ( w* ) DEBUG2
 RTN
 &set-pixel LIT2 &set-pixel-fn $2 JMP2
 &i $2
