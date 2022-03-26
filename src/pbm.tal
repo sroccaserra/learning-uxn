@@ -31,10 +31,14 @@
     SCREEN_WIDTH .Screen/width DEO2
     SCREEN_HEIGHT .Screen/height DEO2
 
-    ;file-name .File/name DEO2
+    ;file-name ;display-pbm-file JSR2
+BRK
+
+@display-pbm-file ( ;file-name-addr* -- )
+    .File/name DEO2
     ;parse-header JSR2
     ;set-pixel ;parse-pixels JSR2
-BRK
+RTN
 
 @parse-header ( -- w* h* )
     #0003 .File/length DEO2
