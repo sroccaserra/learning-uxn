@@ -81,15 +81,15 @@ RTN
         LIT2 &nb-chars-by-row $2
         &loop-chars
             ;get-char JSR2 STH
-            #0008 #0000
+            #08 #00
             &loop-bits
-                ( ... nb-bit* )
-                DUP2 LIT2 &nb-char $2 #0008 MUL2 ADD2 ( ... nb-bit* x* )
-                OVR2 LIT2 &y $2 ( ... nb-bit* x* nb-bit* y* )
-                SWP2 NIP 8MOD #07 SWP - STHrk SWP BIT
-                ( ... nb-bit* x* y* value^ ) ;&set-pixel JSR2
-                INC2 NEQ2k ,&loop-bits JCN
-                POP2 POP2
+                ( ... bit^ )
+                DUP TOS LIT2 &nb-char $2 #0008 MUL2 ADD2 ( ... bit^ x* )
+                OVR2 NIP LIT2 &y $2 ( ... bit^ x* bit^ y* )
+                ROT 8MOD #07 SWP - STHrk SWP BIT
+                ( ... bit^ x* y* value^ ) ;&set-pixel JSR2
+                INC NEQk ,&loop-bits JCN
+                POP POP
             POPr
             ,&nb-char LDR2 INC2 DUP2 ,&nb-char STR2
             OVR2 NEQ2 ,&loop-chars JCN
