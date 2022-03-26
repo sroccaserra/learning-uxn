@@ -33,7 +33,7 @@
 
     ;file-name .File/name DEO2
     ;parse-header JSR2
-    ;set-pixel ;parse-data JSR2
+    ;set-pixel ;parse-pixels JSR2
 BRK
 
 @parse-header ( -- w* h* )
@@ -69,30 +69,30 @@ RTN
     LIT &char $1
 RTN
 
-@parse-data ( w* h* set-pixel-fn* -- )
+@parse-pixels ( w* h* set-pixel-fn* -- )
     ;&set-pixel-fn STA2
 
     ( w* h* )
-    SWP2 #0007 ADD2 #0008 DIV2 ,&nb-chars-by-row STR2
+    SWP2 #0007 ADD2 #0008 DIV2 #0008 MUL2 ,&byte-x-max STR2
 
     ( h* )
     &loop-y
-        #0000 ,&nb-char STR2
-        LIT2 &nb-chars-by-row $2
-        &loop-chars
+        #0000 ,&byte-x STR2
+        LIT2 &byte-x-max $2
+        &loop-bytes
             ;get-char JSR2 STH
             #08 #00
             &loop-bits
                 ( ... bit^ )
-                DUP TOS LIT2 &nb-char $2 #0008 MUL2 ADD2 ( ... bit^ x* )
+                DUP TOS LIT2 &byte-x $2 ADD2 ( ... bit^ x* )
                 OVR2 NIP LIT2 &y $2 ( ... bit^ x* bit^ y* )
                 ROT 8MOD #07 SWP - STHrk SWP BIT
                 ( ... bit^ x* y* value^ ) ;&set-pixel JSR2
                 INC NEQk ,&loop-bits JCN
                 POP POP
             POPr
-            ,&nb-char LDR2 INC2 DUP2 ,&nb-char STR2
-            OVR2 NEQ2 ,&loop-chars JCN
+            ,&byte-x LDR2 #0008 ADD2 DUP2 ,&byte-x STR2
+            OVR2 NEQ2 ,&loop-bytes JCN
             POP2
 
         ,&y LDR2 INC2 DUP2 ,&y STR2
