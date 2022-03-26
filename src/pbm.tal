@@ -83,7 +83,11 @@ RTN
             ;get-char JSR2 STH
             #0008 #0000
             &loop-bits
-                DUP2 LIT2 &nb-char $2 #0008 MUL2 ADD2 OVR2 LIT2 &y $2 SWP2 NIP 8MOD #07 SWP - STHrk SWP BIT ;&set-pixel JSR2
+                ( ... nb-bit* )
+                DUP2 LIT2 &nb-char $2 #0008 MUL2 ADD2 ( ... nb-bit* x* )
+                OVR2 LIT2 &y $2 ( ... nb-bit* x* nb-bit* y* )
+                SWP2 NIP 8MOD #07 SWP - STHrk SWP BIT
+                ( ... nb-bit* x* y* value^ ) ;&set-pixel JSR2
                 INC2 NEQ2k ,&loop-bits JCN
                 POP2 POP2
             POPr
