@@ -90,7 +90,7 @@ RTN
                 ( ... bit^ )
                 DUP TOS LIT2 &byte-x $2 ADD2 ( ... bit^ x* )
                 OVR2 NIP LIT2 &y $2 ( ... bit^ x* bit^ y* )
-                ROT 8MOD #07 SWP - STHrk SWP BIT
+                ROT #07 SWP SUB STHrk SWP BIT
                 ( ... bit^ x* y* value^ ) ;&set-pixel JSR2
                 INC NEQk ,&loop-bits JCN
                 POP POP
